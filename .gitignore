@@ -2,7 +2,7 @@
 
 .env
 /db/*
-/logs/*
+/logs/*.log
 /public/snapshots/*.png
 /public/snapshots/diff/*.png
 
