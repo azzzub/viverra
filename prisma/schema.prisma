@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Collection {
+  id        String   @id @default(cuid())
+  name      String
+  desc      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Page      Page[]
+}
+
+model Page {
+  id           String      @id @default(cuid())
+  name         String
+  desc         String?
+  diff         Float?
+  masking      String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Snapshot     Snapshot[]
+  collectionID String?
+  collection   Collection? @relation(fields: [collectionID], references: [id])
+}
+
+// APPROVAL STATUS:
+// 0  - PENDING
+// 1  - APPROVED
+// 10 - APPROVE_EXPIRED
+// 2  - PENDING_EXPIRED
+// 3  - REJECTED
+model Snapshot {
+  id        String   @id @default(cuid())
+  pageID    String
+  page      Page     @relation(fields: [pageID], references: [id])
+  filename  String
+  approval  Int
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
