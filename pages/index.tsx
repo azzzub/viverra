@@ -7,6 +7,7 @@ import axios from "axios";
 
 import NavHeader from "components/NavHeader";
 import NewCollection from "components/NewCollection";
+import Link from "next/link";
 
 export default function Home({ res, error }: any) {
   const [menu, setMenu] = useState("");
@@ -21,34 +22,40 @@ export default function Home({ res, error }: any) {
   return (
     <>
       <Head>
-        <title>vrex</title>
+        <title>vrex - visual regression test</title>
       </Head>
       <main className="container">
         <NavHeader
           props={
             <li>
-              <a
-                href="#"
+              <button
+                className="contrast"
                 onClick={() => {
                   setMenu("new_collection");
                 }}
               >
                 create new collection
-              </a>
+              </button>
             </li>
           }
         />
+        <nav aria-label="breadcrumb">
+          <ul>
+            <li>
+              <Link href="/">collections</Link>
+            </li>
+          </ul>
+        </nav>
         {menu === "new_collection" && (
           <NewCollection
             cb={(value: any) => setMenu(value === "cancel" ? "" : value)}
           />
         )}
-        <h4>collection</h4>
         <table>
           <thead>
             <tr>
               <th>name</th>
-              <th>desc</th>
+              <th>notes</th>
               <th>action</th>
             </tr>
           </thead>

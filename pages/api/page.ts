@@ -17,6 +17,7 @@ handler.get("/api/page", async (req, res) => {
         id,
       },
       include: {
+        Collection: {},
         Snapshot: {
           where: {
             OR: [{ approval: 0 }, { approval: 1 }],

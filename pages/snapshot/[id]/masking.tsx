@@ -5,8 +5,10 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 import dynamic from "next/dynamic";
+import Head from "next/head";
 
 const Masking = dynamic(() => import("components/Masking"), {
   ssr: false,
@@ -43,52 +45,73 @@ export default function SnapshotDetail({ res, error }: any) {
   }
 
   return (
-    <main className="container">
-      <NavHeader
-        props={
-          res &&
-          res?.data?.Snapshot?.length > 0 && (
-            <>
-              <li>
-                <button
-                  className="contrast"
-                  aria-busy={isLoading}
-                  onClick={() => setNewMasking(newMasking + 1)}
-                >
-                  +1 mask
-                </button>
-              </li>
-              <li>
-                <button aria-busy={isLoading} onClick={updateMasking}>
-                  save
-                </button>
-              </li>
-              <li>
-                <button
-                  className="secondary"
-                  aria-busy={isLoading}
-                  onClick={() => router.back()}
-                >
-                  back
-                </button>
-              </li>
-            </>
-          )
-        }
-      />
+    <>
+      <Head>
+        <title>masking snapshot - vrex</title>
+      </Head>
+      <main className="container">
+        <NavHeader
+          props={
+            res &&
+            res?.data?.Snapshot?.length > 0 && (
+              <>
+                <li>
+                  <button
+                    className="contrast"
+                    aria-busy={isLoading}
+                    onClick={() => setNewMasking(newMasking + 1)}
+                  >
+                    +1 mask
+                  </button>
+                </li>
+                <li>
+                  <button aria-busy={isLoading} onClick={updateMasking}>
+                    save
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="secondary"
+                    aria-busy={isLoading}
+                    onClick={() => router.back()}
+                  >
+                    back
+                  </button>
+                </li>
+              </>
+            )
+          }
+        />
 
-      {res && res?.data?.Snapshot?.length > 0 && (
-        <div className="grid">
-          <Masking
-            res={res}
-            cbNewRect={newMasking}
-            cb={(val: any) => setMasking(val)}
-          />
-          <pre>to remove the mask, double click on it</pre>
-        </div>
-      )}
-      <br />
-    </main>
+        <nav aria-label="breadcrumb">
+          <ul>
+            <li>
+              <Link href="/">collections</Link>
+            </li>
+            <li>
+              <Link href={`/collection/${res?.data?.Collection?.id}`}>
+                {res?.data?.Collection?.name}
+              </Link>
+            </li>
+            <li>
+              <Link href="#">{res?.data?.name}</Link>
+            </li>
+          </ul>
+        </nav>
+
+        {res && res?.data?.Snapshot?.length > 0 && (
+          <div className="grid">
+            <Masking
+              res={res}
+              cbNewRect={newMasking}
+              cb={(val: any) => setMasking(val)}
+            />
+            <pre>to remove the mask, double click on it</pre>
+          </div>
+        )}
+        <br />
+      </main>
+    </>
   );
 }
 

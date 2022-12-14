@@ -5,8 +5,12 @@ export default function NavHeader({ props }: any) {
     <nav>
       <ul>
         <li>
-          <strong>
-            <Link href="/">vrex</Link>
+          <strong
+            style={{
+              fontSize: "32px",
+            }}
+          >
+            <Link href="/">🦖 vrex - visual regression test</Link>
           </strong>
         </li>
       </ul>

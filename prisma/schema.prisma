@@ -29,7 +29,7 @@ model Page {
   updatedAt    DateTime    @updatedAt
   Snapshot     Snapshot[]
   collectionID String?
-  collection   Collection? @relation(fields: [collectionID], references: [id])
+  Collection   Collection? @relation(fields: [collectionID], references: [id])
 }
 
 // APPROVAL STATUS:

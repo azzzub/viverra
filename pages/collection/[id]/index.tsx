@@ -1,57 +1,53 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
 import { formatDistance } from "date-fns";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import axios from "axios";
 
-import NewPage from "components/NewPage";
 import NavHeader from "components/NavHeader";
 import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function Home({ res, error }: any) {
-  const [menu, setMenu] = useState("");
   const router = useRouter();
-
-  useEffect(() => {
-    if (menu === "success_fetch") {
-      router.replace(router.asPath);
-    }
-  }, [menu]);
 
   return (
     <>
       <Head>
-        <title>vrex</title>
+        <title>collection - vrex</title>
       </Head>
       <main className="container">
         <NavHeader
           props={
             <li>
-              <a
-                href="#"
+              <button
+                className="contrast"
                 onClick={() => {
-                  setMenu("new_page");
+                  navigator.clipboard.writeText(router.query["id"] as string);
+                  toast.success("collection id copied to clipboard");
                 }}
               >
-                create new page
-              </a>
+                copy collection id
+              </button>
             </li>
           }
         />
-        {menu === "new_page" && (
-          <NewPage
-            cb={(value: any) => setMenu(value === "cancel" ? "" : value)}
-            collectionID={router.query["id"]}
-          />
-        )}
-        <h5>page • {res?.data?.name}</h5>
+        <nav aria-label="breadcrumb">
+          <ul>
+            <li>
+              <Link href="/">collections</Link>
+            </li>
+            <li>
+              <Link href="#">{res?.data?.name}</Link>
+            </li>
+          </ul>
+        </nav>
         <table>
           <thead>
             <tr>
-              <th>id</th>
               <th>name</th>
               <th>result</th>
               <th>update</th>
@@ -62,7 +58,6 @@ export default function Home({ res, error }: any) {
             {res?.data?.Page?.map((value: any) => {
               return (
                 <tr key={value?.id}>
-                  <td>{value?.id}</td>
                   <td>{value?.name}</td>
                   {value?.Snapshot.length === 0 && (
                     <td className="no-data">no snapshot</td>
