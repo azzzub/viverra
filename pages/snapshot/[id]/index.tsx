@@ -42,6 +42,10 @@ export default function SnapshotDetail({ res, error }: any) {
     }
   }
 
+  if (!res?.data) {
+    return <pre>no data</pre>;
+  }
+
   return (
     <>
       <Head>

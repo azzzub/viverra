@@ -47,6 +47,15 @@ handler.post("/api/approval", async (req, res) => {
       },
     });
 
+    await prisma.page.update({
+      where: {
+        id: snapshotDetail.pageID,
+      },
+      data: {
+        diff: 0.0,
+      },
+    });
+
     logger.success({
       data: rejectSnapshot,
     });
@@ -91,6 +100,15 @@ handler.post("/api/approval", async (req, res) => {
     },
     data: {
       approval: 1,
+    },
+  });
+
+  await prisma.page.update({
+    where: {
+      id: snapshotDetail.pageID,
+    },
+    data: {
+      diff: 0.0,
     },
   });
 

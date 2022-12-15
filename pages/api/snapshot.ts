@@ -219,16 +219,16 @@ handler.post("/api/snapshot", async (req, res) => {
         id: newSnapshot.id,
       },
     });
-  } else {
-    await prisma.page.update({
-      where: {
-        id: pageID,
-      },
-      data: {
-        diff: diffPercentage,
-      },
-    });
   }
+
+  await prisma.page.update({
+    where: {
+      id: pageID,
+    },
+    data: {
+      diff: diffPercentage,
+    },
+  });
 
   logger.success({
     data: newSnapshot,

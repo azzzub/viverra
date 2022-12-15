@@ -10,9 +10,38 @@ import NavHeader from "components/NavHeader";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 export default function Home({ res, error }: any) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  var options = {
+    method: "GET",
+    url: "http://localhost:3000/api/report",
+    params: { collectionID: "clbn70mzf0000xlc5l47vav9m" },
+    headers: { "Content-Type": "application/json" },
+  };
+
+  const sendReport = async () => {
+    try {
+      setIsLoading(true);
+      await axios.get("/api/report", {
+        params: {
+          collectionID: router.query["id"] as string,
+        },
+      });
+      toast.success("report sent successfully!");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!res?.data) {
+    return <pre>no data</pre>;
+  }
 
   return (
     <>
@@ -22,17 +51,31 @@ export default function Home({ res, error }: any) {
       <main className="container">
         <NavHeader
           props={
-            <li>
-              <button
-                className="contrast"
-                onClick={() => {
-                  navigator.clipboard.writeText(router.query["id"] as string);
-                  toast.success("collection id copied to clipboard");
-                }}
-              >
-                copy collection id
-              </button>
-            </li>
+            <>
+              {res?.data?.Page.length > 0 && (
+                <li>
+                  <button
+                    className="secondary"
+                    onClick={() => {
+                      sendReport();
+                    }}
+                  >
+                    send report
+                  </button>
+                </li>
+              )}
+              <li>
+                <button
+                  className="contrast"
+                  onClick={() => {
+                    navigator.clipboard.writeText(router.query["id"] as string);
+                    toast.success("collection id copied to clipboard");
+                  }}
+                >
+                  copy collection id
+                </button>
+              </li>
+            </>
           }
         />
         <nav aria-label="breadcrumb">
@@ -49,6 +92,7 @@ export default function Home({ res, error }: any) {
           <thead>
             <tr>
               <th>name</th>
+              <th>diff (%)</th>
               <th>result</th>
               <th>update</th>
               <th>action</th>
@@ -59,6 +103,7 @@ export default function Home({ res, error }: any) {
               return (
                 <tr key={value?.id}>
                   <td>{value?.name}</td>
+                  <td>{value?.diff || "0.0"}</td>
                   {value?.Snapshot.length === 0 && (
                     <td className="no-data">no snapshot</td>
                   )}
