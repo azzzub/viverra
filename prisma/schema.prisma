@@ -30,6 +30,8 @@ model Page {
   Snapshot     Snapshot[]
   collectionID String?
   Collection   Collection? @relation(fields: [collectionID], references: [id])
+  User         User?       @relation(fields: [userId], references: [id])
+  userId       String?
 }
 
 // APPROVAL STATUS:
@@ -45,6 +47,20 @@ model Snapshot {
   filename  String
   approval  Int
   note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ROLE STATUS
+// 0 - VIEWER
+// 1 - EDITOR
+// 2 - ADMIN
+model User {
+  id        String   @id @default(cuid())
+  page      Page[]
+  username  String   @unique
+  password  String
+  role      Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

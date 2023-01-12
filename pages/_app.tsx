@@ -2,17 +2,24 @@
 import "../styles/globals.css";
 import "@picocss/pico";
 
+import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
-import type { AppProps } from "next/app";
 import axios from "axios";
+
+import type { AppProps } from "next/app";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
     <>
-      <Toaster />
-      <Component {...pageProps} />
+      <SessionProvider session={session}>
+        <Toaster />
+        <Component {...pageProps} />
+      </SessionProvider>
     </>
   );
 }
