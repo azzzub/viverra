@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 .env
-/db/*
+/db/*.db
 /logs/*.log
 /public/snapshots/*.png
 /public/snapshots/diff/*.png
