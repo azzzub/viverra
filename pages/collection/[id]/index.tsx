@@ -16,13 +16,6 @@ export default function Home({ res, error }: any) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  var options = {
-    method: "GET",
-    url: "http://localhost:3000/api/report",
-    params: { collectionID: "clbn70mzf0000xlc5l47vav9m" },
-    headers: { "Content-Type": "application/json" },
-  };
-
   const sendReport = async () => {
     try {
       setIsLoading(true);
@@ -68,7 +61,8 @@ export default function Home({ res, error }: any) {
                 <button
                   className="contrast"
                   onClick={() => {
-                    navigator.clipboard.writeText(router.query["id"] as string);
+                    unsecuredCopyToClipboard(router.query["id"] as string);
+                    // navigator.clipboard.writeText(router.query["id"] as string);
                     toast.success("collection id copied to clipboard");
                   }}
                 >
@@ -159,6 +153,20 @@ export default function Home({ res, error }: any) {
       </main>
     </>
   );
+}
+
+function unsecuredCopyToClipboard(text: string) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand("copy");
+  } catch (err) {
+    console.error("Unable to copy to clipboard", err);
+  }
+  document.body.removeChild(textArea);
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
