@@ -18,9 +18,9 @@ or you can use npm if you can't install yarn _(no guarantee)_
 
 **> installation**
 
-after clone this repo, you must run `make setup` and follow the instruction
+after clone this repo, install all dependencies using command `yarn`
 
-then install all dependencies using command `yarn`
+then, you must run `make setup` and follow the instruction
 
 going to production environment, run `yarn build` at first then `yarn start`
 
