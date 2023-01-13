@@ -69,6 +69,7 @@ handler.post("/api/collection", async (req, res) => {
   const logger = new LoggerAPI(req, res);
   const name = req.body?.name;
   const desc = req.body?.desc;
+  const collectionID = req.body?.collectionID;
 
   if (!name) {
     const error = "'name' value needed";
@@ -76,6 +77,39 @@ handler.post("/api/collection", async (req, res) => {
     return res.status(400).json({
       data: null,
       error,
+    });
+  }
+
+  if (
+    process.env.NEXT_PUBLIC_BASE_URL === "http://localhost:3000" ||
+    process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000"
+  ) {
+    let collection;
+
+    if (collectionID === "") {
+      collection = await prisma.collection.create({
+        data: {
+          name,
+          desc,
+        },
+      });
+    } else {
+      collection = await prisma.collection.create({
+        data: {
+          id: collectionID,
+          name,
+          desc,
+        },
+      });
+    }
+
+    logger.success({
+      data: collection,
+    });
+
+    return res.status(200).json({
+      data: collection,
+      error: null,
     });
   }
 
