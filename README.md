@@ -1,10 +1,10 @@
-## **🦖 VREX**
+## **VIVERRA**
 
-### visual regression test
+### visual verifier robust assistant
 
 ---
 
-<img src="./public/vrex-mascot.png" alt="vrex" style="width:150px;"/>
+<img src="./public/viverra-mascot.png" alt="viverra" style="width:150px;"/>
 
 _will always watching your snapshot_
 
@@ -24,7 +24,7 @@ then, you must run `make setup` and follow the instruction
 
 going to production environment, run `yarn build` at first then `yarn start`
 
-vrex will serve on port :3000
+viverra will serve on port :3000
 
 <br/>
 

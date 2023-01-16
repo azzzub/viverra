@@ -27,7 +27,7 @@ export default async function sendSlack(summary: TestResult) {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `:t-rex: *VREX TEST REPORT* - _${format(new Date(), "PPpp")}_`,
+          text: `*VIVERRA TEST REPORT* - _${format(new Date(), "PPpp")}_`,
         },
       },
       {

@@ -39,7 +39,7 @@ export default function Home({ res, error }: any) {
   return (
     <>
       <Head>
-        <title>collection - vrex</title>
+        <title>collection - viverra</title>
       </Head>
       <main className="container">
         <NavHeader

@@ -51,7 +51,7 @@ export default function SnapshotDetail({ res, error }: any) {
   return (
     <>
       <Head>
-        <title>masking snapshot - vrex</title>
+        <title>masking snapshot - viverra</title>
       </Head>
       <main className="container">
         <NavHeader
