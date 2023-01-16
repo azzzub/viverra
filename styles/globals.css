@@ -1,3 +1,21 @@
+@media only screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #b79b84;
+    --primary-hover: #cbb29c;
+    --primary-focus: #5f4434;
+    --primary-inverse: #fff;
+    --background-color: #12100f;
+  }
+}
+
+:root {
+  --form-element-active-border-color: var(--primary);
+  --form-element-focus-color: var(--primary-focus);
+  --switch-color: var(--primary-inverse);
+  --switch-checked-background-color: var(--primary);
+  --background-color: var(--background-color);
+}
+
 .failed {
   color: red;
   font-weight: bold;

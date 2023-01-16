@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -13,7 +14,13 @@ export default function NavHeader({ props, hideSession }: any) {
               fontSize: "32px",
             }}
           >
-            <Link href="/">🦖 vrex - visual regression test</Link>
+            <Image
+              src={"/viverra-mascot.png"}
+              width={80}
+              height={40}
+              alt="viverra"
+            ></Image>
+            <Link href="/">viverra - visual verifier</Link>
           </strong>
         </li>
       </ul>

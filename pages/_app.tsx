@@ -1,6 +1,6 @@
 // Global style
-import "../styles/globals.css";
 import "@picocss/pico";
+import "../styles/globals.css";
 
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";

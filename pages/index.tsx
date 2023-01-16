@@ -22,7 +22,7 @@ export default function Home({ res, error }: any) {
   return (
     <>
       <Head>
-        <title>vrex - visual regression test</title>
+        <title>viverra - visual verifier</title>
       </Head>
       <main className="container">
         <NavHeader
