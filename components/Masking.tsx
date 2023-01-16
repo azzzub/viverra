@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Layer, Stage } from "react-konva";
 import Rectangle from "./Rectangle";
 
-export default function Masking({ res, cbNewRect, cb }: any) {
+export default function Masking({ res, cbNewRect, cb, disable }: any) {
   const [selectedId, selectShape] = useState<any>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   // const [originalSize, setOriginalSize] = useState({ width: 0, height: 0 });
@@ -44,9 +44,9 @@ export default function Masking({ res, cbNewRect, cb }: any) {
     ]);
   }
 
-  useEffect(() => {
-    console.log(rect);
-  }, [rect]);
+  // useEffect(() => {
+  //   console.log(rect);
+  // }, [rect]);
 
   const checkDeselect = (e: any) => {
     // deselect when clicked on empty area
@@ -105,10 +105,13 @@ export default function Masking({ res, cbNewRect, cb }: any) {
                 return (
                   <Rectangle
                     key={i}
+                    disable={disable}
                     shapeProps={r}
                     isSelected={r.id === selectedId}
                     onSelect={() => {
-                      selectShape(r.id);
+                      if (!disable) {
+                        selectShape(r.id);
+                      }
                     }}
                     onChange={(newAttrs: any) => {
                       const rects = rect.slice();
@@ -118,8 +121,10 @@ export default function Masking({ res, cbNewRect, cb }: any) {
                     }}
                     onDblClick={() => {
                       // const rects = rect.slice(i);
-                      const _rect = rect.filter((v) => v.id != r.id);
-                      setRect(_rect);
+                      if (!disable) {
+                        const _rect = rect.filter((v) => v.id != r.id);
+                        setRect(_rect);
+                      }
                     }}
                   />
                 );

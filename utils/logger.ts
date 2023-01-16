@@ -25,7 +25,7 @@ export class LoggerAPI {
     return logger.error(
       {
         error: err?.toString(),
-        message: err.message,
+        message: err?.message,
         body: this.req.body,
         headers: this.req.headers,
       },

@@ -9,6 +9,7 @@ import Link from "next/link";
 
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useSession } from "next-auth/react";
 
 const Masking = dynamic(() => import("components/Masking"), {
   ssr: false,
@@ -19,6 +20,7 @@ export default function SnapshotDetail({ res, error }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [masking, setMasking] = useState([]);
   const [newMasking, setNewMasking] = useState(0);
+  const { data, status } = useSession();
 
   useEffect(() => {
     if (error) {
@@ -44,6 +46,10 @@ export default function SnapshotDetail({ res, error }: any) {
     }
   }
 
+  if (status === "loading") {
+    return <div>loading...</div>;
+  }
+
   if (!res?.data) {
     return <pre>no data</pre>;
   }
@@ -59,20 +65,24 @@ export default function SnapshotDetail({ res, error }: any) {
             res &&
             res?.data?.Snapshot?.length > 0 && (
               <>
-                <li>
-                  <button
-                    className="contrast"
-                    aria-busy={isLoading}
-                    onClick={() => setNewMasking(newMasking + 1)}
-                  >
-                    +1 mask
-                  </button>
-                </li>
-                <li>
-                  <button aria-busy={isLoading} onClick={updateMasking}>
-                    save
-                  </button>
-                </li>
+                {data?.user?.role === 1 && (
+                  <>
+                    <li>
+                      <button
+                        className="contrast"
+                        aria-busy={isLoading}
+                        onClick={() => setNewMasking(newMasking + 1)}
+                      >
+                        +1 mask
+                      </button>
+                    </li>
+                    <li>
+                      <button aria-busy={isLoading} onClick={updateMasking}>
+                        save
+                      </button>
+                    </li>
+                  </>
+                )}
                 <li>
                   <button
                     className="secondary"
@@ -109,8 +119,13 @@ export default function SnapshotDetail({ res, error }: any) {
               res={res}
               cbNewRect={newMasking}
               cb={(val: any) => setMasking(val)}
+              disable={data?.user.role !== 1}
             />
-            <pre>to remove the mask, double click on it</pre>
+            <pre>
+              {data?.user.role === 1
+                ? "to remove the mask, double click on it"
+                : "view only"}
+            </pre>
           </div>
         )}
         <br />

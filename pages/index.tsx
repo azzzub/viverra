@@ -8,16 +8,22 @@ import axios from "axios";
 import NavHeader from "components/NavHeader";
 import NewCollection from "components/NewCollection";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function Home({ res, error }: any) {
   const [menu, setMenu] = useState("");
   const router = useRouter();
+  const { data, status } = useSession();
 
   useEffect(() => {
     if (menu === "success_fetch") {
       router.replace(router.asPath);
     }
   }, [menu]);
+
+  if (status === "loading") {
+    return <div>loading...</div>;
+  }
 
   return (
     <>
@@ -28,14 +34,16 @@ export default function Home({ res, error }: any) {
         <NavHeader
           props={
             <li>
-              <button
-                className="contrast"
-                onClick={() => {
-                  setMenu("new_collection");
-                }}
-              >
-                create new collection
-              </button>
+              {data?.user?.role === 1 && (
+                <button
+                  className="contrast"
+                  onClick={() => {
+                    setMenu("new_collection");
+                  }}
+                >
+                  create new collection
+                </button>
+              )}
             </li>
           }
         />

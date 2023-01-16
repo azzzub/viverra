@@ -9,6 +9,7 @@ const Rectangle = ({
   onSelect,
   onChange,
   onDblClick,
+  disable,
 }) => {
   const shapeRef = React.useRef();
   const trRef = React.useRef();
@@ -29,7 +30,7 @@ const Rectangle = ({
         ref={shapeRef}
         {...shapeProps}
         fill="#ff00ffc0"
-        draggable
+        draggable={!disable}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
