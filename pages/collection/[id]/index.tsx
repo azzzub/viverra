@@ -96,6 +96,7 @@ export default function Home({ res, error }: any) {
               <th>diff (%)</th>
               <th>result</th>
               <th>update</th>
+              <th>last check at</th>
               <th>action</th>
             </tr>
           </thead>
@@ -138,6 +139,18 @@ export default function Home({ res, error }: any) {
                       )}
                     </td>
                   )}
+                  {value?.lastCheckAt && (
+                    <td>
+                      {formatDistance(
+                        Date.parse(value?.lastCheckAt),
+                        new Date(),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                    </td>
+                  )}
+                  {!value?.lastCheckAt && <td>-</td>}
                   <td>
                     <button
                       onClick={() => router.push(`/snapshot/${value?.id}`)}

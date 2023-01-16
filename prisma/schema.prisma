@@ -29,6 +29,7 @@ model Page {
   masking      String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  lastCheckAt  DateTime?
   Snapshot     Snapshot[]
   collectionID String?
   Collection   Collection? @relation(fields: [collectionID], references: [id])

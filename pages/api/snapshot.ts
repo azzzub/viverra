@@ -227,6 +227,7 @@ handler.post("/api/snapshot", async (req, res) => {
     },
     data: {
       diff: diffPercentage,
+      lastCheckAt: new Date(),
     },
   });
 
