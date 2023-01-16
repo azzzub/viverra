@@ -2,6 +2,7 @@
 import axios from "axios";
 import NavHeader from "components/NavHeader";
 import { GetServerSidePropsContext } from "next";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,6 +13,7 @@ import toast from "react-hot-toast";
 export default function SnapshotDetail({ res, error }: any) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { data, status } = useSession();
 
   useEffect(() => {
     if (error) {
@@ -42,6 +44,10 @@ export default function SnapshotDetail({ res, error }: any) {
     }
   }
 
+  if (status === "loading") {
+    return <div>loading...</div>;
+  }
+
   if (!res?.data) {
     return <pre>no data</pre>;
   }
@@ -63,23 +69,27 @@ export default function SnapshotDetail({ res, error }: any) {
                       <br />
                       <span>{res?.data?.diff}%</span>
                     </li>
-                    <li>
-                      <button
-                        aria-busy={isLoading}
-                        onClick={() => approval(true)}
-                      >
-                        approve
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="secondary"
-                        aria-busy={isLoading}
-                        onClick={() => approval(false)}
-                      >
-                        reject
-                      </button>
-                    </li>
+                    {data?.user?.role === 1 && (
+                      <>
+                        <li>
+                          <button
+                            aria-busy={isLoading}
+                            onClick={() => approval(true)}
+                          >
+                            approve
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="secondary"
+                            aria-busy={isLoading}
+                            onClick={() => approval(false)}
+                          >
+                            reject
+                          </button>
+                        </li>
+                      </>
+                    )}
                   </>
                 )}
                 <li>
