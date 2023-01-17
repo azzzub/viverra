@@ -16,13 +16,29 @@ or you can use npm if you can't install yarn _(no guarantee)_
 
 </br>
 
-**> installation**
+you can serve Viverra with `pm2` or `yarn`, with `pm2` you can run viverra on the background:
 
-after clone this repo, install all dependencies using command `yarn`
+<br/>
 
-then, you must run `make setup` and follow the instruction
+**> installation - serve with pm2 (choose one)**
 
-going to production environment, run `yarn build` at first then `yarn start`
+**pre req: install `pm2`** _[instalation guidance](https://pm2.keymetrics.io/docs/usage/quick-start/)_
+
+run `make setup` and follow the instruction
+
+then, run `make serve-pm2`
+
+viverra will serve on port :3000
+
+_restarting the viverra service in `pm2`, run this command `make restart-pm2`_
+
+<br/>
+
+**> installation - serve with yarn (choose one)**
+
+run `make setup` and follow the instruction
+
+then, run `make serve-yarn`
 
 viverra will serve on port :3000
 
@@ -47,3 +63,13 @@ _ref: https://github.com/prisma/studio_
 **> known issue and how to solve it**
 
 if you encounter some issue such as `connect ECONNREFUSED ::1:3000` in the homepage, **please replace your URL and `NEXT_PUBLIC_BASE_URL` variable on `.env` file** from `http://localhost:3000` to `http://127.0.0.1:3000`
+
+<br/>
+
+---
+
+## Using on Katalon
+
+---
+
+To use viverra on Katalon, see [here](./external/Katalon/README.md)
