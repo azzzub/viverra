@@ -50,19 +50,21 @@ export default function Home({ res, error }: any) {
       <main className="container">
         <NavHeader
           props={
-            res?.data?.Page.length > 0 &&
+            // res?.data?.Page.length > 0 &&
             data?.user?.role === 1 && (
               <>
-                <li>
-                  <button
-                    className="secondary"
-                    onClick={() => {
-                      sendReport();
-                    }}
-                  >
-                    send report
-                  </button>
-                </li>
+                {res?.data?.Page.length > 0 && (
+                  <li>
+                    <button
+                      className="secondary"
+                      onClick={() => {
+                        sendReport();
+                      }}
+                    >
+                      send report
+                    </button>
+                  </li>
+                )}
                 <li>
                   <button
                     className="contrast"
