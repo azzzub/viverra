@@ -13,12 +13,12 @@ class Viverra {
      * it will automatically send the report and clear the collection ID
 	 */
 	@AfterTestCase
-	def vrexAfterTestCase(TestCaseContext testCaseContext) {
-		def viverra = new ViverraService()
+	def viverraAfterTestCase(TestCaseContext testCaseContext) {
+		def v = new ViverraService()
 		if (GlobalVariable.viverraSendReport && GlobalVariable.viverraCollectionID != '') {
-			viverra.sendReport()
+			v.sendReport()
 
-			viverra.clear()
+			v.clear()
 		}
 	}
 }
