@@ -17,8 +17,8 @@ model Collection {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Page      Page[]
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
+  Team      Team?    @relation(fields: [teamID], references: [id])
+  teamID    String?
 }
 
 model Page {
@@ -57,11 +57,25 @@ model Snapshot {
 // 1 - EDITOR
 // 2 - ADMIN
 model User {
-  id         String       @id @default(cuid())
-  Collection Collection[]
-  username   String       @unique
-  password   String
-  role       Int          @default(0)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Team      Team?    @relation(fields: [teamID], references: [id])
+  teamID    String?
+}
+
+model Team {
+  id           String       @id @default(cuid())
+  name         String
+  note         String?
+  slackMention String?
+  webhook      String?
+  metadata     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Collection   Collection[]
+  User         User[]
 }

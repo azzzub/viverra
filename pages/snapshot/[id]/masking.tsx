@@ -65,7 +65,7 @@ export default function SnapshotDetail({ res, error }: any) {
             res &&
             res?.data?.Snapshot?.length > 0 && (
               <>
-                {data?.user?.role === 1 && (
+                {data && data.user?.role > 0 && (
                   <>
                     <li>
                       <button
@@ -122,7 +122,7 @@ export default function SnapshotDetail({ res, error }: any) {
               disable={data?.user.role !== 1}
             />
             <pre>
-              {data?.user.role === 1
+              {data && data.user?.role > 0
                 ? "to remove the mask, double click on it"
                 : "view only"}
             </pre>

@@ -51,7 +51,8 @@ export default function Home({ res, error }: any) {
         <NavHeader
           props={
             // res?.data?.Page.length > 0 &&
-            data?.user?.role === 1 && (
+            data &&
+            data.user?.role > 0 && (
               <>
                 {res?.data?.Page.length > 0 && (
                   <li>

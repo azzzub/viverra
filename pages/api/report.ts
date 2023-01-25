@@ -35,11 +35,27 @@ handler.get("/api/report", async (req, res) => {
           updatedAt: true,
         },
       },
+      Team: {
+        select: {
+          name: true,
+          slackMention: true,
+          webhook: true,
+        },
+      },
     },
   });
 
   if (!collection) {
     throw new Error("no collection");
+  }
+
+  if (!collection.Team?.webhook) {
+    const error = "webhook is empty";
+    logger.error(error);
+    return res.status(400).json({
+      data: null,
+      error,
+    });
   }
 
   let countFailed = 0;
@@ -65,8 +81,10 @@ handler.get("/api/report", async (req, res) => {
     title: `${collection?.name}`,
     failed: countFailed,
     passed: countPassed,
-    teamMention: process.env.NEXT_PUBLIC_TEAM_MENTION || "",
+    teamMention: collection.Team?.slackMention || "",
     listOfFailedSS,
+    webhook: collection.Team?.webhook,
+    teamName: collection.Team.name,
   });
 
   logger.success({

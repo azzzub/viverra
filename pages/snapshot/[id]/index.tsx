@@ -69,7 +69,7 @@ export default function SnapshotDetail({ res, error }: any) {
                       <br />
                       <span>{res?.data?.diff}%</span>
                     </li>
-                    {data?.user?.role === 1 && (
+                    {data && data.user?.role > 0 && (
                       <>
                         <li>
                           <button
