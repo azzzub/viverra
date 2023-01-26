@@ -10,7 +10,7 @@ async function localAdmin() {
     data: {
       username: "admin",
       password: hash,
-      role: 1,
+      role: 2,
     },
   });
 

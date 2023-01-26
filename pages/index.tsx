@@ -34,7 +34,7 @@ export default function Home({ res, error }: any) {
         <NavHeader
           props={
             <li>
-              {data?.user?.role === 1 && (
+              {data && data.user?.role > 0 && (
                 <button
                   className="contrast"
                   onClick={() => {

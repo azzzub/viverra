@@ -8,10 +8,12 @@ interface TestResult {
   teamMention: string;
   title: string;
   listOfFailedSS: string;
+  webhook: string;
+  teamName: string;
 }
 
 export default async function sendSlack(summary: TestResult) {
-  const url = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
+  const url = summary.webhook;
 
   if (!url) throw new Error("no webhook url found");
 
@@ -34,7 +36,7 @@ export default async function sendSlack(summary: TestResult) {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${summary.title}*`,
+          text: `*${summary.teamName} • ${summary.title}*`,
         },
       },
       {

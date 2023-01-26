@@ -41,6 +41,11 @@ export default function NavHeader({ props, hideSession }: any) {
           </>
         )}
       </ul>
+      {session?.user?.role === 2 && (
+        <Link href={"/admin"} className="admin-badge">
+          ADMIN
+        </Link>
+      )}
     </nav>
   );
 }

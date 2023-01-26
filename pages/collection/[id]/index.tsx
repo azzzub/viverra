@@ -32,7 +32,7 @@ export default function Home({ res, error }: any) {
       });
       toast.success("report sent successfully!");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
@@ -51,11 +51,13 @@ export default function Home({ res, error }: any) {
         <NavHeader
           props={
             // res?.data?.Page.length > 0 &&
-            data?.user?.role === 1 && (
+            data &&
+            data.user?.role > 0 && (
               <>
                 {res?.data?.Page.length > 0 && (
                   <li>
                     <button
+                      aria-busy={isLoading}
                       className="secondary"
                       onClick={() => {
                         sendReport();

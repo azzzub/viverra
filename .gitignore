@@ -5,6 +5,7 @@
 /logs/*.log
 /public/snapshots/*.png
 /public/snapshots/diff/*.png
+*.db-journal
 
 # dependencies
 /node_modules

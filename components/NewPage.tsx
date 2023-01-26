@@ -19,7 +19,7 @@ export default function NewPage({ cb, collectionID }: any) {
       toast.success("create new page success");
       cb("success_fetch");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.error || error.message);
     } finally {
       setLoading(false);
     }

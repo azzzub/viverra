@@ -40,7 +40,7 @@ export default function SnapshotDetail({ res, error }: any) {
         toast.success("success update masking");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +65,7 @@ export default function SnapshotDetail({ res, error }: any) {
             res &&
             res?.data?.Snapshot?.length > 0 && (
               <>
-                {data?.user?.role === 1 && (
+                {data && data.user?.role > 0 && (
                   <>
                     <li>
                       <button
@@ -122,7 +122,7 @@ export default function SnapshotDetail({ res, error }: any) {
               disable={data?.user.role !== 1}
             />
             <pre>
-              {data?.user.role === 1
+              {data && data.user?.role > 0
                 ? "to remove the mask, double click on it"
                 : "view only"}
             </pre>
@@ -146,6 +146,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       props: { res: res.data, error: null },
     };
   } catch (error: any) {
-    return { props: { res: null, error: error.message } };
+    return {
+      props: {
+        res: null,
+        error: error?.response?.data?.error || error.message,
+      },
+    };
   }
 }
