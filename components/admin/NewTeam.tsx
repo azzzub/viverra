@@ -21,7 +21,7 @@ export default function NewTeam({ cb }: any) {
         cb("success_fetch");
       },
       onError(error: any) {
-        toast.error(error.message);
+        toast.error(error?.response?.data?.error || error.message);
       },
     }
   );

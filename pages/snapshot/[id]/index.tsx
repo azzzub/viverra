@@ -38,7 +38,7 @@ export default function SnapshotDetail({ res, error }: any) {
         router.replace(router.asPath);
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
@@ -171,6 +171,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       props: { res: res.data, error: null },
     };
   } catch (error: any) {
-    return { props: { res: null, error: error.message } };
+    return {
+      props: {
+        res: null,
+        error: error?.response?.data?.error || error.message,
+      },
+    };
   }
 }

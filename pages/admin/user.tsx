@@ -33,7 +33,7 @@ export default function AdminUser() {
       if (err?.response?.status === 401) {
         router.push("/");
       } else {
-        toast.error(err.message);
+        toast.error(err?.response?.data?.error || err.message);
       }
     },
   });
