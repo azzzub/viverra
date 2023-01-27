@@ -57,3 +57,18 @@
 .menu-no-bullet > ul > li {
   list-style: none;
 }
+
+.badge-env {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: fit-content;
+  font-size: medium;
+  color: white;
+  font-weight: bold;
+  padding: 7px;
+  background-color: red;
+  border-radius: 0 0 10px 0;
+  z-index: 999;
+  margin-bottom: -32px;
+}

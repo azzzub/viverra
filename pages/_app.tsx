@@ -30,6 +30,9 @@ export default function App({
     <>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session}>
+          {process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000" && (
+            <div className="badge-env">LOCAL</div>
+          )}
           <Toaster />
           <Component {...pageProps} />
         </SessionProvider>
