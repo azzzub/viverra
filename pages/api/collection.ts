@@ -1,5 +1,6 @@
 // External
 import { PrismaClient } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 
 // Local
 import { LoggerAPI } from "utils/logger";
@@ -47,10 +48,16 @@ handler.get("/api/collection", async (req, res) => {
   } else {
     const allData = await prisma.collection.findMany({
       orderBy: {
-        name: "asc",
+        Team: {
+          name: "desc",
+        },
       },
       include: {
-        Page: true,
+        Team: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -69,7 +76,16 @@ handler.post("/api/collection", async (req, res) => {
   const logger = new LoggerAPI(req, res);
   const name = req.body?.name;
   const desc = req.body?.desc;
-  const collectionID = req.body?.collectionID;
+  const collectionID = req.body?.collectionID as any;
+
+  const token = (await getToken({ req })) as any;
+
+  if (!token || (token && token.user?.role < 1)) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
 
   if (!name) {
     const error = "'name' value needed";
@@ -79,6 +95,21 @@ handler.post("/api/collection", async (req, res) => {
       error,
     });
   }
+
+  const myTeam = await prisma.user.findFirst({
+    where: {
+      id: token.user.id,
+    },
+    include: {
+      Team: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  const teamID = myTeam?.Team?.id || null;
 
   if (
     process.env.NEXT_PUBLIC_BASE_URL === "http://localhost:3000" ||
@@ -91,6 +122,7 @@ handler.post("/api/collection", async (req, res) => {
         data: {
           name,
           desc,
+          teamID,
         },
       });
     } else {
@@ -99,6 +131,7 @@ handler.post("/api/collection", async (req, res) => {
           id: collectionID,
           name,
           desc,
+          teamID,
         },
       });
     }
@@ -113,19 +146,20 @@ handler.post("/api/collection", async (req, res) => {
     });
   }
 
-  const newPage = await prisma.collection.create({
+  const newCollection = await prisma.collection.create({
     data: {
       name,
       desc,
+      teamID,
     },
   });
 
   logger.success({
-    data: newPage,
+    data: newCollection,
   });
 
   return res.status(200).json({
-    data: newPage,
+    data: newCollection,
     error: null,
   });
 });

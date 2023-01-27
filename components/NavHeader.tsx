@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Menu } from "primereact/menu";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useRef } from "react";
 
 export default function NavHeader({ props, hideSession }: any) {
   const { data: session } = useSession();
+  const menu = useRef<any>(null);
 
   return (
     <nav>
@@ -28,6 +31,22 @@ export default function NavHeader({ props, hideSession }: any) {
         {props}
         {!hideSession && (
           <>
+            <Menu
+              model={[
+                { label: "my team", icon: "pi pi-users", url: "/team" },
+                {
+                  label: "sign out",
+                  icon: "pi pi-lock",
+                  command() {
+                    signOut();
+                  },
+                },
+              ]}
+              popup
+              ref={menu}
+              id="popup_menu"
+              className="menu-no-bullet"
+            />
             {!session && (
               <li>
                 <button onClick={() => signIn()}>sign in</button>
@@ -35,7 +54,9 @@ export default function NavHeader({ props, hideSession }: any) {
             )}
             {session && (
               <li>
-                <button onClick={() => signOut()}>sign out</button>
+                <button onClick={(event) => menu.current.toggle(event)}>
+                  your account
+                </button>
               </li>
             )}
           </>
