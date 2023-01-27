@@ -64,6 +64,7 @@ export default function Home({ res, error }: any) {
             <tr>
               <th>name</th>
               <th>notes</th>
+              <th>team name</th>
               <th>action</th>
             </tr>
           </thead>
@@ -74,6 +75,7 @@ export default function Home({ res, error }: any) {
                   <tr key={value?.id}>
                     <td>{value?.name}</td>
                     <td>{value?.desc}</td>
+                    <td>{value?.Team ? value.Team.name : "-"}</td>
                     <td>
                       <button
                         onClick={() => router.push(`/collection/${value?.id}`)}

@@ -53,3 +53,7 @@
   padding: 10px;
   margin: 3px;
 }
+
+.menu-no-bullet > ul > li {
+  list-style: none;
+}

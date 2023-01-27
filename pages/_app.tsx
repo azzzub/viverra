@@ -1,3 +1,8 @@
+// Prime react style
+import "primereact/resources/themes/lara-light-indigo/theme.css"; //theme
+import "primereact/resources/primereact.min.css"; //core css
+import "primeicons/primeicons.css"; //icons
+
 // Global style
 import "@picocss/pico";
 import "../styles/globals.css";
