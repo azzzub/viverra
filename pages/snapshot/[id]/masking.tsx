@@ -119,7 +119,7 @@ export default function SnapshotDetail({ res, error }: any) {
               res={res}
               cbNewRect={newMasking}
               cb={(val: any) => setMasking(val)}
-              disable={data?.user.role !== 1}
+              disable={data?.user.role === 0}
             />
             <pre>
               {data && data.user?.role > 0
