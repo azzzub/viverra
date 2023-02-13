@@ -10,23 +10,74 @@ const PNG = require("pngjs").PNG;
 import { LoggerAPI } from "utils/logger";
 import { handler } from "utils/nextConnect";
 import { applyIgnoreAreas } from "utils/comparison";
+import { getTeamNamePrefix } from "utils/tools";
+
+const prisma = new PrismaClient();
 
 // File upload middleware
-handler.use("/api/snapshot", (req, _res, next) => {
+handler.use("/api/snapshot", (req, res, next) => {
+  const snapshotPath = path.join(process.cwd(), "/public/snapshots");
+
   const form = new multiparty.Form({
-    uploadDir: path.join(process.cwd(), "/public/snapshots"),
+    uploadDir: snapshotPath,
   });
-  form.parse(req, function (err, fields, files) {
+
+  form.parse(req, async function (err, fields, files) {
     if (err) {
       return next(err);
     }
-    req.fields = fields;
-    req.file = files.file[0];
-    next();
+
+    try {
+      const collectionID = fields.collectionID?.[0] as string | undefined;
+
+      if (!collectionID) {
+        const error = "'collectionID' value needed";
+        return res.status(400).json({
+          data: null,
+          error,
+        });
+      }
+
+      const collection = await prisma.collection.findFirst({
+        where: {
+          id: collectionID,
+        },
+        select: {
+          Team: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      const teamNamePrefix = getTeamNamePrefix(collection?.Team?.name);
+
+      const defPath = path.join(
+        snapshotPath,
+        path.basename(files.file[0].path)
+      );
+
+      const newPath = path.join(
+        snapshotPath,
+        teamNamePrefix,
+        path.basename(files.file[0].path)
+      );
+
+      fs.rename(defPath, newPath, (err) => {
+        if (err) return next(err);
+      });
+
+      req.fields = fields;
+      req.file = files.file[0];
+      req.teamNamePrefix = teamNamePrefix;
+
+      next();
+    } catch (error) {
+      next(error);
+    }
   });
 });
-
-const prisma = new PrismaClient();
 
 handler.post("/api/snapshot", async (req, res) => {
   const logger = new LoggerAPI(req, res);
@@ -36,6 +87,8 @@ handler.post("/api/snapshot", async (req, res) => {
 
   const name = req.fields.name?.[0] as string | undefined;
   const collectionID = req.fields.collectionID?.[0] as string | undefined;
+
+  let teamName = req.teamNamePrefix;
 
   if (name && pageID) {
     const error = "'pageID' and 'name' cannot be passed together";
@@ -162,7 +215,8 @@ handler.post("/api/snapshot", async (req, res) => {
   }
 
   // Compare the approved snapshot with the uploaded snapshot
-  const snapshotPath = path.join(process.cwd(), "/public/snapshots") + "/";
+  const snapshotPath =
+    path.join(process.cwd(), "/public/snapshots", teamName) + "/";
 
   const approvedSnapshotImg = PNG.sync.read(
     fs.readFileSync(snapshotPath + approvedSnapshot[0].filename)

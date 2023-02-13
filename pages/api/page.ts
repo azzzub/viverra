@@ -17,7 +17,15 @@ handler.get("/api/page", async (req, res) => {
         id,
       },
       include: {
-        Collection: {},
+        Collection: {
+          include: {
+            Team: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         Snapshot: {
           where: {
             OR: [{ approval: 0 }, { approval: 1 }],
@@ -52,6 +60,15 @@ handler.get("/api/page", async (req, res) => {
             approval: "desc",
           },
           take: 2,
+        },
+        Collection: {
+          include: {
+            Team: {
+              select: {
+                name: true,
+              },
+            },
+          },
         },
       },
     });

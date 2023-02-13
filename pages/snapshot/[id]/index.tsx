@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import ReactCompareImage from "react-compare-image";
 import toast from "react-hot-toast";
+import { getTeamNamePrefix } from "utils/tools";
 
 export default function SnapshotDetail({ res, error }: any) {
   const router = useRouter();
@@ -126,7 +127,9 @@ export default function SnapshotDetail({ res, error }: any) {
         {res && res?.data?.Snapshot?.length === 1 && (
           <div className="grid">
             <img
-              src={`/api/img/snapshots/${res?.data?.Snapshot?.[0]?.filename}`}
+              src={`/api/img/snapshots/${getTeamNamePrefix(
+                res?.data?.Collection?.Team?.name
+              )}/${res?.data?.Snapshot?.[0]?.filename}`}
               alt="approved ss"
             />
             <pre>all good!</pre>
@@ -136,8 +139,12 @@ export default function SnapshotDetail({ res, error }: any) {
         {res && res?.data?.Snapshot?.length === 2 && (
           <div className="grid">
             <ReactCompareImage
-              leftImage={`/api/img/snapshots/${res?.data?.Snapshot?.[0]?.filename}`}
-              rightImage={`/api/img/snapshots/${res?.data?.Snapshot?.[1]?.filename}`}
+              leftImage={`/api/img/snapshots/${getTeamNamePrefix(
+                res?.data?.Collection?.Team?.name
+              )}/${res?.data?.Snapshot?.[0]?.filename}`}
+              rightImage={`/api/img/snapshots/${getTeamNamePrefix(
+                res?.data?.Collection?.Team?.name
+              )}/${res?.data?.Snapshot?.[1]?.filename}`}
               leftImageLabel={
                 res?.data?.Snapshot?.[0]?.approval === 1
                   ? "expectation"
@@ -148,7 +155,9 @@ export default function SnapshotDetail({ res, error }: any) {
               }
             />
             <img
-              src={`/api/img/snapshots/diff/${res?.data?.id}.png`}
+              src={`/api/img/snapshots/${getTeamNamePrefix(
+                res?.data?.Collection?.Team?.name
+              )}/diff/${res?.data?.id}.png`}
               alt="diff"
             />
           </div>

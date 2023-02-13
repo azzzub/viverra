@@ -144,13 +144,14 @@ export default function MyTeam() {
             <label>team id</label>
             <input type="text" value={value.id} disabled />
             <label>team name</label>
-            <input
+            <input type="text" value={value.name} disabled />
+            {/* <input
               type="text"
               value={value.name}
               required
               disabled={!isEdit}
               onChange={(e) => setValue({ ...value, name: e.target.value })}
-            />
+            /> */}
             <label>team note</label>
             <input
               type="text"

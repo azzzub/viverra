@@ -6,6 +6,7 @@ import { LoggerAPI } from "./logger";
 interface NextApiRequestWithFile extends NextApiRequest {
   file: any;
   fields: any;
+  teamNamePrefix: any;
 }
 
 // Next connect middleware handler
