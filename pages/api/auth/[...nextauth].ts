@@ -37,6 +37,7 @@ export const authOptions: AuthOptions = {
               id: user?.id,
               username: user?.username,
               role: user?.role,
+              teamID: user?.teamID,
             };
           } else {
             throw new Error("recheck your username and password");

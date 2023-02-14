@@ -1,5 +1,6 @@
 // External
 import { PrismaClient } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 
 // Local
 import { LoggerAPI } from "utils/logger";
@@ -12,6 +13,25 @@ handler.post("/api/masking", async (req, res) => {
 
   const masking = req.body?.masking;
   const pageID = req.body?.pageID;
+  const token = (await getToken({ req })) as any;
+
+  if (!token || (token && token.user?.role < 1)) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
+
+  const teamID = token.user?.teamID;
+
+  if (!teamID) {
+    const error = "no team map to you";
+    logger.error(error);
+    return res.status(400).json({
+      data: null,
+      error,
+    });
+  }
 
   if (!pageID) {
     const error = "'pageID' value needed";
@@ -32,6 +52,24 @@ handler.post("/api/masking", async (req, res) => {
   }
 
   JSON.parse(masking);
+
+  const isEligible = await prisma.collection.findFirst({
+    where: {
+      teamID,
+      Page: {
+        some: {
+          id: pageID,
+        },
+      },
+    },
+  });
+
+  if (!isEligible) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized, different team!",
+    });
+  }
 
   const page = await prisma.page.update({
     where: {

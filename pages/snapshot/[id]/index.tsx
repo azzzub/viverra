@@ -1,31 +1,55 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
+
 import axios from "axios";
 import NavHeader from "components/NavHeader";
-import { GetServerSidePropsContext } from "next";
-import { useSession } from "next-auth/react";
+// import { GetServerSidePropsContext } from "next";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import ReactCompareImage from "react-compare-image";
 import toast from "react-hot-toast";
+import { useQuery } from "react-query";
 
-export default function SnapshotDetail({ res, error }: any) {
+export default function SnapshotDetail() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { data, status } = useSession();
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
+  // Get the snapshot detail
+  const snapshotDetailQuery = useQuery(
+    "snapshotDetail",
+    async () => {
+      return await axios.get("/api/page", {
+        params: {
+          id: router.query["id"],
+        },
+      });
+    },
+    {
+      onError(err: any) {
+        if (err?.response?.status !== 401) {
+          toast.error(err?.response?.data?.error || err.message);
+        }
+      },
+      retry: false,
+      enabled: false,
     }
-  }, [error]);
+  );
+
+  useEffect(() => {
+    if (router.query["id"]) {
+      snapshotDetailQuery.refetch();
+    }
+  }, [router]);
 
   async function approval(status: boolean) {
     try {
       setIsLoading(true);
       const approvalRes = await axios.post("/api/approval", {
-        snapshotID: res?.data?.Snapshot?.[1]?.id,
+        snapshotID: snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.id,
         status,
       });
 
@@ -44,11 +68,17 @@ export default function SnapshotDetail({ res, error }: any) {
     }
   }
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn();
+    }
+  }, [status]);
+
+  if (status === "loading" || snapshotDetailQuery.isLoading) {
     return <div>loading...</div>;
   }
 
-  if (!res?.data) {
+  if (!snapshotDetailQuery.data?.data?.data) {
     return <pre>no data</pre>;
   }
 
@@ -60,36 +90,39 @@ export default function SnapshotDetail({ res, error }: any) {
       <main className="container">
         <NavHeader
           props={
-            res?.data?.Snapshot?.length > 0 && (
+            snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0 && (
               <>
-                {res?.data?.Snapshot.length === 2 && (
+                {snapshotDetailQuery.data?.data?.data?.Snapshot.length ===
+                  2 && (
                   <>
                     <li>
                       <span>differentiation</span>
                       <br />
-                      <span>{res?.data?.diff}%</span>
+                      <span>{snapshotDetailQuery.data?.data?.data?.diff}%</span>
                     </li>
-                    {data && data.user?.role > 0 && (
-                      <>
-                        <li>
-                          <button
-                            aria-busy={isLoading}
-                            onClick={() => approval(true)}
-                          >
-                            approve
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="secondary"
-                            aria-busy={isLoading}
-                            onClick={() => approval(false)}
-                          >
-                            reject
-                          </button>
-                        </li>
-                      </>
-                    )}
+                    {data &&
+                      data.user?.role > 0 &&
+                      snapshotDetailQuery.data.data?.isEligible && (
+                        <>
+                          <li>
+                            <button
+                              aria-busy={isLoading}
+                              onClick={() => approval(true)}
+                            >
+                              approve
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="secondary"
+                              aria-busy={isLoading}
+                              onClick={() => approval(false)}
+                            >
+                              reject
+                            </button>
+                          </li>
+                        </>
+                      )}
                   </>
                 )}
                 <li>
@@ -111,44 +144,52 @@ export default function SnapshotDetail({ res, error }: any) {
               <Link href="/">collections</Link>
             </li>
             <li>
-              <Link href={`/collection/${res?.data?.Collection?.id}`}>
-                {res?.data?.Collection?.name}
+              <Link
+                href={`/collection/${snapshotDetailQuery.data?.data?.data?.Collection?.id}`}
+              >
+                {snapshotDetailQuery.data?.data?.data?.Collection?.name}
               </Link>
             </li>
             <li>
-              <Link href="#">{res?.data?.name}</Link>
+              <Link href="#">{snapshotDetailQuery.data?.data?.data?.name}</Link>
             </li>
           </ul>
         </nav>
 
-        {res && res?.data?.Snapshot?.length === 0 && <pre>no snapshot</pre>}
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 0 && (
+          <pre>no snapshot</pre>
+        )}
 
-        {res && res?.data?.Snapshot?.length === 1 && (
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 1 && (
           <div className="grid">
             <img
-              src={`/api/img/snapshots/${res?.data?.Snapshot?.[0]?.filename}`}
+              src={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[0]?.filename}`}
               alt="approved ss"
             />
             <pre>all good!</pre>
           </div>
         )}
 
-        {res && res?.data?.Snapshot?.length === 2 && (
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 2 && (
           <div className="grid">
             <ReactCompareImage
-              leftImage={`/api/img/snapshots/${res?.data?.Snapshot?.[0]?.filename}`}
-              rightImage={`/api/img/snapshots/${res?.data?.Snapshot?.[1]?.filename}`}
+              leftImage={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[0]?.filename}`}
+              rightImage={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.filename}`}
               leftImageLabel={
-                res?.data?.Snapshot?.[0]?.approval === 1
+                snapshotDetailQuery.data?.data?.data?.Snapshot?.[0]
+                  ?.approval === 1
                   ? "expectation"
                   : "error"
               }
               rightImageLabel={
-                res?.data?.Snapshot?.[1]?.approval === 0 ? "actual" : "error"
+                snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]
+                  ?.approval === 0
+                  ? "actual"
+                  : "error"
               }
             />
             <img
-              src={`/api/img/snapshots/diff/${res?.data?.id}.png`}
+              src={`/api/img/snapshots/diff/${snapshotDetailQuery.data?.data?.data?.id}.png`}
               alt="diff"
             />
           </div>
@@ -159,23 +200,23 @@ export default function SnapshotDetail({ res, error }: any) {
   );
 }
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  try {
-    const res = await axios.get("/api/page", {
-      params: {
-        id: ctx.query["id"],
-      },
-    });
+// export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+//   try {
+//     const res = await axios.get("/api/page", {
+//       params: {
+//         id: ctx.query["id"],
+//       },
+//     });
 
-    return {
-      props: { res: res.data, error: null },
-    };
-  } catch (error: any) {
-    return {
-      props: {
-        res: null,
-        error: error?.response?.data?.error || error.message,
-      },
-    };
-  }
-}
+//     return {
+//       props: { res: res.data, error: null },
+//     };
+//   } catch (error: any) {
+//     return {
+//       props: {
+//         res: null,
+//         error: error?.response?.data?.error || error.message,
+//       },
+//     };
+//   }
+// }

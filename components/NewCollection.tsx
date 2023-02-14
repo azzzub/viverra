@@ -28,20 +28,15 @@ export default function NewCollection({ cb }: any) {
 
   return (
     <form onSubmit={submitHandler}>
-      {(process.env.NEXT_PUBLIC_BASE_URL === "http://localhost:3000" ||
-        process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000") && (
-        <>
-          <input
-            type="text"
-            placeholder="collection id"
-            onChange={(e) => setCollectionID(e.target.value)}
-          />
-          <p>
-            * if the collection id is empty, we will automatically generate the
-            collection id for you <i>(only on your local pc)</i>
-          </p>
-        </>
-      )}
+      {/* {(process.env.NEXT_PUBLIC_BASE_URL === "http://localhost:3000" ||
+        process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000") && ( */}
+      <input
+        type="text"
+        placeholder="MTCM code (ex: 300111)*"
+        required
+        onChange={(e) => setCollectionID(e.target.value)}
+      />
+      {/* )} */}
       <input
         type="text"
         name="name"
