@@ -8,20 +8,44 @@ import axios from "axios";
 import NavHeader from "components/NavHeader";
 import NewCollection from "components/NewCollection";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useQuery } from "react-query";
+import { toast } from "react-hot-toast";
 
-export default function Home({ res, error }: any) {
+export default function Home() {
   const [menu, setMenu] = useState("");
   const router = useRouter();
   const { data, status } = useSession();
 
+  // Get the all collection
+  const collectionsQuery = useQuery(
+    "collections",
+    async () => {
+      return await axios.get("/api/collection");
+    },
+    {
+      onError(err: any) {
+        if (err?.response?.status !== 401) {
+          toast.error(err?.response?.data?.error || err.message);
+        }
+      },
+      retry: false,
+    }
+  );
+
   useEffect(() => {
     if (menu === "success_fetch") {
-      router.replace(router.asPath);
+      collectionsQuery.refetch();
     }
   }, [menu]);
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn();
+    }
+  }, [status]);
+
+  if (status === "loading" || collectionsQuery.isLoading) {
     return <div>loading...</div>;
   }
 
@@ -62,6 +86,7 @@ export default function Home({ res, error }: any) {
         <table>
           <thead>
             <tr>
+              <th>test code</th>
               <th>name</th>
               <th>notes</th>
               <th>team name</th>
@@ -69,43 +94,33 @@ export default function Home({ res, error }: any) {
             </tr>
           </thead>
           <tbody>
-            {res?.data &&
-              res?.data.map((value: any) => {
-                return (
-                  <tr key={value?.id}>
-                    <td>{value?.name}</td>
-                    <td>{value?.desc}</td>
-                    <td>{value?.Team ? value.Team.name : "-"}</td>
-                    <td>
-                      <button
-                        onClick={() => router.push(`/collection/${value?.id}`)}
-                      >
-                        detail
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+            {collectionsQuery?.data?.data?.data?.map((value: any) => {
+              return (
+                <tr key={value?.id}>
+                  <td>MTCM-{value?.id}</td>
+                  <td>{value?.name}</td>
+                  <td>{value?.desc}</td>
+                  <td>{value?.Team ? value.Team.name : "-"}</td>
+                  <td>
+                    <button
+                      onClick={() => router.push(`/collection/${value?.id}`)}
+                    >
+                      detail
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-        {error && (
+        {collectionsQuery.isError && (
           <pre>
             got error fetching pages data!
             <br />
-            message: {error}
+            message: {collectionsQuery.error.message}
           </pre>
         )}
       </main>
     </>
   );
-}
-
-export async function getServerSideProps() {
-  try {
-    const res = await axios.get("/api/collection");
-
-    return { props: { res: res.data, error: null } };
-  } catch (error: any) {
-    return { props: { res: null, error: error.message } };
-  }
 }

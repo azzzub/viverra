@@ -7,18 +7,54 @@ import Head from "next/head";
 import axios from "axios";
 
 import NavHeader from "components/NavHeader";
-import { GetServerSidePropsContext } from "next";
+// import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useQuery } from "react-query";
 
-export default function Home({ res, error }: any) {
+export default function Home() {
   const router = useRouter();
   const { data, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
-  if (status === "loading") {
+  // Get the collection detail
+  const collectionQuery = useQuery(
+    "collection_detail",
+    async () => {
+      return await axios.get("/api/collection", {
+        params: {
+          id: router.query["id"],
+        },
+      });
+    },
+    {
+      enabled: false,
+      onError(err: any) {
+        if (err?.response?.status === 401) {
+          toast.error("unautorized!");
+        } else {
+          toast.error(err?.response?.data?.error || err.message);
+        }
+      },
+      retry: false,
+    }
+  );
+
+  useEffect(() => {
+    if (router.query["id"]) {
+      collectionQuery.refetch();
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn();
+    }
+  }, [status]);
+
+  if (status === "loading" || collectionQuery.isLoading) {
     return <div>loading...</div>;
   }
 
@@ -38,7 +74,7 @@ export default function Home({ res, error }: any) {
     }
   };
 
-  if (!res?.data) {
+  if (!collectionQuery.data?.data) {
     return <pre>no data</pre>;
   }
 
@@ -54,20 +90,21 @@ export default function Home({ res, error }: any) {
             data &&
             data.user?.role > 0 && (
               <>
-                {res?.data?.Page.length > 0 && (
-                  <li>
-                    <button
-                      aria-busy={isLoading}
-                      className="secondary"
-                      onClick={() => {
-                        sendReport();
-                      }}
-                    >
-                      send report
-                    </button>
-                  </li>
-                )}
-                <li>
+                {collectionQuery.data?.data?.isEligible &&
+                  collectionQuery?.data?.data?.data?.Page?.length > 0 && (
+                    <li>
+                      <button
+                        aria-busy={isLoading}
+                        className="secondary"
+                        onClick={() => {
+                          sendReport();
+                        }}
+                      >
+                        send report
+                      </button>
+                    </li>
+                  )}
+                {/* <li>
                   <button
                     className="contrast"
                     onClick={() => {
@@ -78,7 +115,7 @@ export default function Home({ res, error }: any) {
                   >
                     copy collection id
                   </button>
-                </li>
+                </li> */}
               </>
             )
           }
@@ -89,7 +126,7 @@ export default function Home({ res, error }: any) {
               <Link href="/">collections</Link>
             </li>
             <li>
-              <Link href="#">{res?.data?.name}</Link>
+              <Link href="#">{collectionQuery.data?.data?.data?.name}</Link>
             </li>
           </ul>
         </nav>
@@ -105,7 +142,7 @@ export default function Home({ res, error }: any) {
             </tr>
           </thead>
           <tbody>
-            {res?.data?.Page?.map((value: any) => {
+            {collectionQuery.data?.data?.data?.Page?.map((value: any) => {
               return (
                 <tr key={value?.id}>
                   <td>{value?.name}</td>
@@ -167,11 +204,11 @@ export default function Home({ res, error }: any) {
             })}
           </tbody>
         </table>
-        {error && (
+        {collectionQuery.isError && (
           <pre>
             got error fetching pages data!
             <br />
-            message: {error}
+            message: {collectionQuery.error.message}
           </pre>
         )}
       </main>
@@ -179,30 +216,16 @@ export default function Home({ res, error }: any) {
   );
 }
 
-function unsecuredCopyToClipboard(text: string) {
-  const textArea = document.createElement("textarea");
-  textArea.value = text;
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-  try {
-    document.execCommand("copy");
-  } catch (err) {
-    console.error("Unable to copy to clipboard", err);
-  }
-  document.body.removeChild(textArea);
-}
-
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  try {
-    const res = await axios.get("/api/collection", {
-      params: {
-        id: ctx.query["id"],
-      },
-    });
-
-    return { props: { res: res.data, error: null } };
-  } catch (error: any) {
-    return { props: { res: null, error: error.message } };
-  }
-}
+// function unsecuredCopyToClipboard(text: string) {
+//   const textArea = document.createElement("textarea");
+//   textArea.value = text;
+//   document.body.appendChild(textArea);
+//   textArea.focus();
+//   textArea.select();
+//   try {
+//     document.execCommand("copy");
+//   } catch (err) {
+//     console.error("Unable to copy to clipboard", err);
+//   }
+//   document.body.removeChild(textArea);
+// }

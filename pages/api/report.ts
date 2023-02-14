@@ -1,6 +1,7 @@
 // External
 import { PrismaClient } from "@prisma/client";
 import { formatDistance } from "date-fns";
+import { getToken } from "next-auth/jwt";
 
 // Local
 import { LoggerAPI } from "utils/logger";
@@ -14,12 +15,46 @@ handler.get("/api/report", async (req, res) => {
 
   const collectionID = req.query?.["collectionID"] as string;
 
+  const token = (await getToken({ req })) as any;
+
+  if (!token || (token && token.user?.role < 1)) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
+
+  const teamID = token.user?.teamID;
+
+  if (!teamID) {
+    const error = "no team map to you";
+    logger.error(error);
+    return res.status(400).json({
+      data: null,
+      error,
+    });
+  }
+
   if (!collectionID) {
     const error = "'collectionID' value needed";
     logger.error(error);
     return res.status(400).json({
       data: null,
       error,
+    });
+  }
+
+  const isEligible = await prisma.collection.findFirst({
+    where: {
+      teamID,
+      id: collectionID,
+    },
+  });
+
+  if (!isEligible) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized, different team!",
     });
   }
 

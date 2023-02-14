@@ -1,5 +1,6 @@
 // External
 import { PrismaClient } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 
 // Local
 import { LoggerAPI } from "utils/logger";
@@ -12,12 +13,52 @@ handler.post("/api/approval", async (req, res) => {
   const snapshotID = req.body?.snapshotID;
   const status = req.body?.status;
 
+  const token = (await getToken({ req })) as any;
+
+  if (!token || (token && token.user?.role < 1)) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
+
+  const teamID = token.user?.teamID;
+
+  if (!teamID) {
+    const error = "no team map to you";
+    logger.error(error);
+    return res.status(400).json({
+      data: null,
+      error,
+    });
+  }
+
   if (!snapshotID) {
     const error = "'snapshotID' value needed";
     logger.error(error);
     return res.status(400).json({
       data: null,
       error,
+    });
+  }
+
+  const isEligible = await prisma.page.findFirst({
+    where: {
+      Collection: {
+        teamID,
+      },
+      Snapshot: {
+        some: {
+          id: snapshotID,
+        },
+      },
+    },
+  });
+
+  if (!isEligible) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized, different team!",
     });
   }
 

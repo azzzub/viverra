@@ -1,5 +1,6 @@
 // External
 import { PrismaClient } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
 
 // Local
 import { LoggerAPI } from "utils/logger";
@@ -11,13 +12,30 @@ handler.get("/api/page", async (req, res) => {
   const logger = new LoggerAPI(req, res);
   const id = req.query["id"] as string | undefined;
 
+  const token = (await getToken({ req })) as any;
+
+  if (!token) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
+
+  const teamID = token.user?.teamID;
+
   if (id) {
     const firstData = await prisma.page.findFirst({
       where: {
         id,
       },
       include: {
-        Collection: {},
+        Collection: {
+          select: {
+            teamID: true,
+            name: true,
+            id: true,
+          },
+        },
         Snapshot: {
           where: {
             OR: [{ approval: 0 }, { approval: 1 }],
@@ -30,12 +48,16 @@ handler.get("/api/page", async (req, res) => {
       },
     });
 
+    const isEligible = firstData?.Collection?.teamID === teamID;
+
     logger.success({
       data: firstData,
+      isEligible,
     });
 
     return res.status(200).json({
       data: firstData,
+      isEligible,
       error: null,
     });
   } else {

@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
+
 import axios from "axios";
 import NavHeader from "components/NavHeader";
-import { GetServerSidePropsContext } from "next";
+// import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -10,23 +12,45 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
+import { useQuery } from "react-query";
 
 const Masking = dynamic(() => import("components/Masking"), {
   ssr: false,
 });
 
-export default function SnapshotDetail({ res, error }: any) {
+export default function SnapshotDetail() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [masking, setMasking] = useState([]);
   const [newMasking, setNewMasking] = useState(0);
   const { data, status } = useSession();
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
+  // Get the snapshot detail
+  const snapshotDetailQuery = useQuery(
+    "snapshotDetail",
+    async () => {
+      return await axios.get("/api/page", {
+        params: {
+          id: router.query["id"],
+        },
+      });
+    },
+    {
+      onError(err: any) {
+        if (err?.response?.status !== 401) {
+          toast.error(err?.response?.data?.error || err.message);
+        }
+      },
+      retry: false,
+      enabled: false,
     }
-  }, [error]);
+  );
+
+  useEffect(() => {
+    if (router.query["id"]) {
+      snapshotDetailQuery.refetch();
+    }
+  }, [router]);
 
   async function updateMasking() {
     try {
@@ -50,7 +74,7 @@ export default function SnapshotDetail({ res, error }: any) {
     return <div>loading...</div>;
   }
 
-  if (!res?.data) {
+  if (!snapshotDetailQuery.data?.data?.data) {
     return <pre>no data</pre>;
   }
 
@@ -62,27 +86,28 @@ export default function SnapshotDetail({ res, error }: any) {
       <main className="container">
         <NavHeader
           props={
-            res &&
-            res?.data?.Snapshot?.length > 0 && (
+            snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0 && (
               <>
-                {data && data.user?.role > 0 && (
-                  <>
-                    <li>
-                      <button
-                        className="contrast"
-                        aria-busy={isLoading}
-                        onClick={() => setNewMasking(newMasking + 1)}
-                      >
-                        +1 mask
-                      </button>
-                    </li>
-                    <li>
-                      <button aria-busy={isLoading} onClick={updateMasking}>
-                        save
-                      </button>
-                    </li>
-                  </>
-                )}
+                {data &&
+                  data.user?.role > 0 &&
+                  snapshotDetailQuery.data?.data?.isEligible && (
+                    <>
+                      <li>
+                        <button
+                          className="contrast"
+                          aria-busy={isLoading}
+                          onClick={() => setNewMasking(newMasking + 1)}
+                        >
+                          +1 mask
+                        </button>
+                      </li>
+                      <li>
+                        <button aria-busy={isLoading} onClick={updateMasking}>
+                          save
+                        </button>
+                      </li>
+                    </>
+                  )}
                 <li>
                   <button
                     className="secondary"
@@ -103,23 +128,28 @@ export default function SnapshotDetail({ res, error }: any) {
               <Link href="/">collections</Link>
             </li>
             <li>
-              <Link href={`/collection/${res?.data?.Collection?.id}`}>
-                {res?.data?.Collection?.name}
+              <Link
+                href={`/collection/${snapshotDetailQuery.data?.data?.data?.Collection?.id}`}
+              >
+                {snapshotDetailQuery.data?.data?.data?.Collection?.name}
               </Link>
             </li>
             <li>
-              <Link href="#">{res?.data?.name}</Link>
+              <Link href="#">{snapshotDetailQuery.data?.data?.data?.name}</Link>
             </li>
           </ul>
         </nav>
 
-        {res && res?.data?.Snapshot?.length > 0 && (
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0 && (
           <div className="grid">
             <Masking
-              res={res}
+              res={snapshotDetailQuery.data?.data}
               cbNewRect={newMasking}
               cb={(val: any) => setMasking(val)}
-              disable={data?.user.role === 0}
+              disable={
+                data?.user.role === 0 ||
+                !snapshotDetailQuery.data?.data?.isEligible
+              }
             />
             <pre>
               {data && data.user?.role > 0
@@ -134,23 +164,23 @@ export default function SnapshotDetail({ res, error }: any) {
   );
 }
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  try {
-    const res = await axios.get("/api/page", {
-      params: {
-        id: ctx.query["id"],
-      },
-    });
+// export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+//   try {
+//     const res = await axios.get("/api/page", {
+//       params: {
+//         id: ctx.query["id"],
+//       },
+//     });
 
-    return {
-      props: { res: res.data, error: null },
-    };
-  } catch (error: any) {
-    return {
-      props: {
-        res: null,
-        error: error?.response?.data?.error || error.message,
-      },
-    };
-  }
-}
+//     return {
+//       props: { res: res.data, error: null },
+//     };
+//   } catch (error: any) {
+//     return {
+//       props: {
+//         res: null,
+//         error: error?.response?.data?.error || error.message,
+//       },
+//     };
+//   }
+// }
