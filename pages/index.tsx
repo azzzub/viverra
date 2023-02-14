@@ -17,11 +17,21 @@ export default function Home() {
   const router = useRouter();
   const { data, status } = useSession();
 
+  const [search, setSearch] = useState({
+    searchName: "",
+    searchCode: "",
+  });
+
   // Get the all collection
   const collectionsQuery = useQuery(
     "collections",
     async () => {
-      return await axios.get("/api/collection");
+      return await axios.get("/api/collection", {
+        params: {
+          mtcm: search.searchCode,
+          name: search.searchName,
+        },
+      });
     },
     {
       onError(err: any) {
@@ -83,6 +93,38 @@ export default function Home() {
             cb={(value: any) => setMenu(value === "cancel" ? "" : value)}
           />
         )}
+        <details>
+          <summary>
+            <i>toggle search</i>
+          </summary>
+          <form
+            className="grid col"
+            onSubmit={(e) => {
+              e.preventDefault();
+              collectionsQuery.refetch();
+            }}
+          >
+            <input
+              type="search"
+              placeholder="mtcm code (ex: 311000)"
+              value={search.searchCode}
+              onChange={(e) => {
+                setSearch({ ...search, searchCode: e.target.value });
+              }}
+            />
+            <input
+              type="search"
+              placeholder="collection name"
+              value={search.searchName}
+              onChange={(e) => {
+                setSearch({ ...search, searchName: e.target.value });
+              }}
+            />
+            <button type="submit" aria-busy={collectionsQuery.isFetching}>
+              search
+            </button>
+          </form>
+        </details>
         <table>
           <thead>
             <tr>

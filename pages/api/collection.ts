@@ -60,12 +60,10 @@ handler.get("/api/collection", async (req, res) => {
       error: null,
     });
   } else {
+    const mtcm = req.query["mtcm"] as string | undefined;
+    const name = req.query["name"] as string | undefined;
+
     const allData = await prisma.collection.findMany({
-      orderBy: {
-        Team: {
-          name: "desc",
-        },
-      },
       include: {
         Team: {
           select: {
@@ -75,6 +73,12 @@ handler.get("/api/collection", async (req, res) => {
       },
       where: {
         teamID,
+        id: {
+          contains: mtcm,
+        },
+        name: {
+          contains: name,
+        },
       },
     });
 
