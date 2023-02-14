@@ -22,6 +22,8 @@ handler.get("/api/collection", async (req, res) => {
 
   const teamID = token.user?.teamID;
 
+  const role = token.user?.role;
+
   if (id) {
     const firstData = await prisma.collection.findFirst({
       where: {
@@ -72,7 +74,7 @@ handler.get("/api/collection", async (req, res) => {
         },
       },
       where: {
-        teamID,
+        teamID: role === 2 ? undefined : teamID,
         id: {
           contains: mtcm,
         },
