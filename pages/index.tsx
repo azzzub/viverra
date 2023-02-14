@@ -106,7 +106,7 @@ export default function Home() {
           >
             <input
               type="search"
-              placeholder="mtcm code"
+              placeholder="mtcm code (ex: 311000)"
               value={search.searchCode}
               onChange={(e) => {
                 setSearch({ ...search, searchCode: e.target.value });
@@ -122,18 +122,6 @@ export default function Home() {
             />
             <button type="submit" aria-busy={collectionsQuery.isFetching}>
               search
-            </button>
-            <button
-              type="button"
-              className="secondary"
-              onClick={() => {
-                setSearch({
-                  searchCode: "",
-                  searchName: "",
-                });
-              }}
-            >
-              reset
             </button>
           </form>
         </details>
