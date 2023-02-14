@@ -35,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     if (menu === "success_fetch") {
-      router.replace(router.asPath);
+      collectionsQuery.refetch();
     }
   }, [menu]);
 

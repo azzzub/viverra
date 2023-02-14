@@ -6,11 +6,18 @@ const prisma = new PrismaClient();
 async function localAdmin() {
   const hash = await bcrypt.hash("admin", 10)
 
+  const team = await prisma.team.create({
+    data: {
+      name: "Team Admin"
+    },
+  });
+
   const res = await prisma.user.create({
     data: {
       username: "admin",
       password: hash,
       role: 2,
+      teamID: team.id
     },
   });
 
