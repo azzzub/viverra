@@ -188,10 +188,40 @@ export default function SnapshotDetail() {
                   : "error"
               }
             />
-            <img
-              src={`/api/img/snapshots/diff/${snapshotDetailQuery.data?.data?.data?.id}.png`}
-              alt="diff"
-            />
+            {snapshotDetailQuery.data?.data?.data?.diff < 0 ? (
+              <>
+                <pre>
+                  COMPARISON ERROR! <br />
+                  <br />
+                  message:{" "}
+                  {
+                    snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.note
+                  }{" "}
+                  <br />
+                  <br />
+                  <a
+                    href={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[0]?.filename}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    expectation image
+                  </a>
+                  <br />
+                  <a
+                    href={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.filename}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    actual image
+                  </a>
+                </pre>
+              </>
+            ) : (
+              <img
+                src={`/api/img/snapshots/diff/${snapshotDetailQuery.data?.data?.data?.id}.png`}
+                alt="diff"
+              />
+            )}
           </div>
         )}
         <br />

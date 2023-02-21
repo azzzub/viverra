@@ -31,7 +31,6 @@ const prisma = new PrismaClient();
 handler.post("/api/snapshot", async (req, res) => {
   const logger = new LoggerAPI(req, res);
   let pageID = req.fields.pageID?.[0] as string | undefined;
-  const note = req.fields.note?.[0] as string | undefined;
   const threshold = req.fields.threshold?.[0] as string | undefined;
 
   const name = req.fields.name?.[0] as string | undefined;
@@ -115,7 +114,6 @@ handler.post("/api/snapshot", async (req, res) => {
     data: {
       filename: path.basename(req.file.path),
       pageID,
-      note,
       approval: existingSnapshot ? 0 : 1,
     },
   });
@@ -192,23 +190,38 @@ handler.post("/api/snapshot", async (req, res) => {
   const img1 = applyIgnoreAreas(approvedSnapshotImg, ignoreArea);
   const img2 = applyIgnoreAreas(newSnapshotImg, ignoreArea);
 
-  const comparison = pixelmatch(
-    img1.data,
-    img2.data,
-    diff.data,
-    width,
-    height,
-    { threshold: 0.1 }
-  );
+  let comparison = 0;
+  let diffPercentage = 0;
+  let isEqual = false;
+  let note = null;
 
-  const diffPercentage = +((comparison * 100) / (width * height)).toFixed(2);
+  try {
+    comparison = pixelmatch(img1.data, img2.data, diff.data, width, height, {
+      threshold: 0.1,
+    });
 
-  fs.writeFileSync(
-    snapshotPath + "diff/" + pageID + ".png",
-    PNG.sync.write(diff)
-  );
+    diffPercentage = +((comparison * 100) / (width * height)).toFixed(2);
 
-  const isEqual = diffPercentage === 0;
+    fs.writeFileSync(
+      snapshotPath + "diff/" + pageID + ".png",
+      PNG.sync.write(diff)
+    );
+
+    isEqual = diffPercentage === 0;
+  } catch (error: any) {
+    diffPercentage = -1;
+    isEqual = false;
+    note = error?.message;
+
+    await prisma.snapshot.update({
+      data: {
+        note,
+      },
+      where: {
+        id: newSnapshot.id,
+      },
+    });
+  }
 
   if (isEqual) {
     await prisma.snapshot.update({

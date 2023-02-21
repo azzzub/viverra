@@ -101,7 +101,7 @@ handler.get("/api/report", async (req, res) => {
   let listOfFailedSS = "";
 
   collection?.Page.map((v) => {
-    if (v.diff && v.diff > 0.0) {
+    if (v.diff && v.diff !== 0.0) {
       countFailed++;
       listOfFailedSS += `- ${v.name} | ${formatDistance(
         Date.parse(v?.updatedAt.toString()),
