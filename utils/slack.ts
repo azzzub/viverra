@@ -17,10 +17,11 @@ export default async function sendSlack(summary: TestResult) {
 
   if (!url) throw new Error("no webhook url found");
 
-  let footer = `${summary.teamMention} all good folks`;
+  let footer = `All good folks! ${summary.teamMention}`;
 
   if (summary.failed > 0) {
-    footer = `${summary.teamMention} Failed snapshots:\n${summary.listOfFailedSS}`;
+//     footer = `${summary.teamMention} Failed snapshots:\n${summary.listOfFailedSS}`;
+    footer = `There are a diff on some snapshots, please check ${summary.teamMention}`
   }
 
   const res = await axios.post(url, {
@@ -29,24 +30,24 @@ export default async function sendSlack(summary: TestResult) {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*VIVERRA TEST REPORT* - _${format(new Date(), "PPpp")}_`,
+          text: `*Visual Testing Viverra Report* ~ _${format(new Date(), "PPpp")}_\n*${summary.title}*`,
         },
       },
+//       {
+//         type: "section",
+//         text: {
+//           type: "mrkdwn",
+//           text: `*${summary.teamName} • ${summary.title}*`,
+//         },
+//       },
+//       {
+//         type: "divider",
+//       },
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${summary.teamName} • ${summary.title}*`,
-        },
-      },
-      {
-        type: "divider",
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*:white_check_mark: ${summary.passed} SS :warning-red: ${summary.failed} SS*`,
+          text: `*:check_circle: ${summary.passed} SS :warning-red: ${summary.failed} SS*`,
         },
         accessory: {
           type: "button",
