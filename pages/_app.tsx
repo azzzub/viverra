@@ -4,8 +4,8 @@ import "primereact/resources/primereact.min.css"; //core css
 import "primeicons/primeicons.css"; //icons
 
 // Global style
-import "@picocss/pico";
-import "../styles/globals.css";
+// import "@picocss/pico";
+// import "../styles/globals.css";
 
 // External
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -30,9 +30,9 @@ export default function App({
     <>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session}>
-          {process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000" && (
+          {/* {process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000" && (
             <div className="badge-env">LOCAL</div>
-          )}
+          )} */}
           <Toaster />
           <Component {...pageProps} />
         </SessionProvider>
