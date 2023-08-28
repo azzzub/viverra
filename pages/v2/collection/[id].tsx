@@ -9,7 +9,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 import { Table, Input, Space, Tag, Typography, message } from "antd";
 
-import styles from "./index.module.css";
+import styles from "./[id].module.css";
 
 export default function Home() {
   const router = useRouter();
@@ -29,17 +29,17 @@ export default function Home() {
   }, [status]);
 
   // Get the all collection
-  const collectionsQuery = useQuery(
-    "collections",
+  const collectionQuery = useQuery(
+    "collection",
     async () => {
-      return await axios.get("/api/v2/collections", {
+      return await axios.get("/api/v2/collection", {
         params: {
-          mtcm: search.searchCode,
-          name: search.searchName,
+          id: router.query["id"],
         },
       });
     },
     {
+      enabled: false,
       onError(err: any) {
         if (err?.response?.status !== 401) {
           messageApi.open({
@@ -52,25 +52,35 @@ export default function Home() {
     }
   );
 
+  // Refetch query if the router finish getting the id query
+  useEffect(() => {
+    if (router.query["id"]) {
+      collectionQuery.refetch();
+    }
+  }, [router]);
+
   // Table column fields
   const columns = [
     {
       title: "Last Check",
-      dataIndex: "lastCheckAt",
+      dataIndex: "lastCheckAtEasy",
       key: "lastCheckAt",
       width: "15%",
     },
     {
-      title: "MTCM",
-      dataIndex: "id",
-      key: "id",
-      width: "15%",
-      render: (item: any) => <Tag>MTCM-{item}</Tag>,
-    },
-    {
-      title: "Name",
+      title: "Snapshot",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Unmatch",
+      dataIndex: "diffEasy",
+      key: "diff",
+    },
+    {
+      title: "Last Reviewed",
+      dataIndex: "lastReviewed",
+      key: "lastReviewed",
     },
     {
       title: "Status",
@@ -88,35 +98,15 @@ export default function Home() {
         <title>Dashboard - Viverra</title>
       </Head>
       <main className={styles.main}>
-        <Space.Compact className={styles.search__container}>
-          <Input
-            allowClear
-            className={styles.input__mtcm}
-            placeholder="Search MTCM"
-            onChange={(e) =>
-              setSearch({ ...search, searchCode: e.target.value })
-            }
-            onPressEnter={() => collectionsQuery.refetch()}
-          />
-          <Input.Search
-            allowClear
-            enterButton
-            placeholder="Search collection name"
-            onChange={(e) =>
-              setSearch({ ...search, searchName: e.target.value })
-            }
-            onSearch={() => collectionsQuery.refetch()}
-          />
-        </Space.Compact>
         <Table
-          dataSource={collectionsQuery?.data?.data?.data}
+          dataSource={collectionQuery?.data?.data?.data?.Page}
           rowKey="id"
           columns={columns}
           rowClassName={styles.row}
           onRow={(record) => {
             return {
               onClick: () => {
-                router.push("v2/collection/" + record.id);
+                router.replace("/snapshot/" + record.id);
               },
             };
           }}

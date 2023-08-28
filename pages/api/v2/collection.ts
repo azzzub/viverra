@@ -1,5 +1,6 @@
 // External
 import { PrismaClient } from "@prisma/client";
+import { formatDistance } from "date-fns";
 import { getToken } from "next-auth/jwt";
 
 // Local
@@ -10,45 +11,94 @@ const prisma = new PrismaClient();
 
 handler.get("/api/v2/collection", async (req, res) => {
   const logger = new LoggerAPI(req, res);
+  const id = req.query["id"] as string | undefined;
   const token = (await getToken({ req })) as any;
 
-  const mtcm = req.query["mtcm"] as string | undefined;
-  const name = req.query["name"] as string | undefined;
+  if (!token) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
 
-  const allData = await prisma.collection.findMany({
-    include: {
-      Team: {
-        select: {
-          name: true,
-        },
-      },
-      Page: {
-        select: {
-          diff: true,
-        },
-      },
-    },
+  const teamID = token.user?.teamID;
+
+  const firstData = await prisma.collection.findFirst({
     where: {
-      teamID: token?.user?.role === 2 ? undefined : token?.user?.teamID,
-      id: {
-        contains: mtcm,
-      },
-      name: {
-        contains: name,
+      id,
+    },
+    include: {
+      Page: {
+        include: {
+          Snapshot: {
+            where: {
+              OR: [{ approval: 0 }, { approval: 1 }],
+            },
+            orderBy: {
+              approval: "desc",
+            },
+            take: 2,
+            select: {
+              updatedAt: true,
+            },
+          },
+        },
       },
     },
   });
 
-  //TODO: looping all data to get failed/pass
+  firstData?.Page.forEach((page) => {
+    // @ts-ignore
+    page["diffEasy"] = page.diff !== null ? page.diff?.toFixed(2) + "%" : "-";
 
-  const comparison = allData;
+    // @ts-ignore
+    page["lastReviewed"] =
+      page.Snapshot.length >= 1
+        ? formatDistance(page.Snapshot[0]?.updatedAt, new Date(), {
+            addSuffix: true,
+          })
+        : "-";
+
+    // @ts-ignore
+    page["lastCheckAtEasy"] = page.lastCheckAt
+      ? formatDistance(page.lastCheckAt, new Date(), {
+          addSuffix: true,
+        })
+      : "-";
+
+    // @ts-ignore
+    page["status"] =
+      page.diff === null
+        ? {
+            message: "Auto-Passed",
+            color: "green",
+          }
+        : page.diff === 0
+        ? {
+            message: "Passed",
+            color: "green",
+          }
+        : page.diff < 0
+        ? {
+            message: "Error - Different Image Size",
+            color: "red",
+          }
+        : {
+            message: "Failed",
+            color: "red",
+          };
+  });
+
+  const isEligible = firstData?.teamID === teamID;
 
   logger.success({
-    data: allData,
+    data: firstData,
+    isEligible,
   });
 
   return res.status(200).json({
-    data: allData,
+    data: firstData,
+    isEligible,
     error: null,
   });
 });
