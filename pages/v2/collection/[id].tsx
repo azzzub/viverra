@@ -95,9 +95,13 @@ export default function Home() {
     <>
       {contextHolder}
       <Head>
-        <title>Dashboard - Viverra</title>
+        <title>Collection - Viverra</title>
       </Head>
       <main className={styles.main}>
+        <div className={styles.title__container}>
+        <Typography.Text code className={styles.title__mtcm}>MTCM-{collectionQuery?.data?.data?.data?.id}</Typography.Text>
+        <Typography.Title level={3} className={styles.title__name}>{collectionQuery?.data?.data?.data?.name}</Typography.Title>
+        </div>
         <Table
           dataSource={collectionQuery?.data?.data?.data?.Page}
           rowKey="id"

@@ -1,19 +1,20 @@
 // External
 import { PrismaClient } from "@prisma/client";
-import { formatDistance } from "date-fns";
 import { getToken } from "next-auth/jwt";
 
 // Local
-import { LoggerAPI } from "utils/logger";
 import { handler } from "utils/nextConnect";
+import * as methodHandler from "./collection.handler";
 
 const prisma = new PrismaClient();
 
+// ===================================================
+// Handler
+// ===================================================
 handler.get("/api/v2/collection", async (req, res) => {
-  const logger = new LoggerAPI(req, res);
-  const id = req.query["id"] as string | undefined;
   const token = (await getToken({ req })) as any;
 
+  // Check user token
   if (!token) {
     return res.status(401).json({
       data: null,
@@ -21,86 +22,53 @@ handler.get("/api/v2/collection", async (req, res) => {
     });
   }
 
+  // Team ID
   const teamID = token.user?.teamID;
 
-  const firstData = await prisma.collection.findFirst({
-    where: {
-      id,
-    },
-    include: {
-      Page: {
-        include: {
-          Snapshot: {
-            where: {
-              OR: [{ approval: 0 }, { approval: 1 }],
-            },
-            orderBy: {
-              approval: "desc",
-            },
-            take: 2,
-            select: {
-              updatedAt: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  // Request query
+  const id = req.query["id"] as string | undefined;
+  const mtcm = req.query["mtcm"] as string | undefined;
+  const name = req.query["name"] as string | undefined;
 
-  firstData?.Page.forEach((page) => {
-    // @ts-ignore
-    page["diffEasy"] = page.diff !== null ? page.diff?.toFixed(2) + "%" : "-";
+  if (id && !mtcm && !name) {
+    return res.status(200).json(await methodHandler.getDetailedCollection(teamID, id))
+  }
 
-    // @ts-ignore
-    page["lastReviewed"] =
-      page.Snapshot.length >= 1
-        ? formatDistance(page.Snapshot[0]?.updatedAt, new Date(), {
-            addSuffix: true,
-          })
-        : "-";
+  if (!id) {
+    return res.status(200).json(await methodHandler.getAllCollections(token, mtcm, name))
+  }
+});
 
-    // @ts-ignore
-    page["lastCheckAtEasy"] = page.lastCheckAt
-      ? formatDistance(page.lastCheckAt, new Date(), {
-          addSuffix: true,
-        })
-      : "-";
+handler.post("/api/v2/collection", async (req, res) => {
+  const name = req.body?.name;
+  const collectionID = req.body?.collectionID as any;
 
-    // @ts-ignore
-    page["status"] =
-      page.diff === null
-        ? {
-            message: "Auto-Passed",
-            color: "green",
-          }
-        : page.diff === 0
-        ? {
-            message: "Passed",
-            color: "green",
-          }
-        : page.diff < 0
-        ? {
-            message: "Error - Different Image Size",
-            color: "red",
-          }
-        : {
-            message: "Failed",
-            color: "red",
-          };
-  });
+  const token = (await getToken({ req })) as any;
 
-  const isEligible = firstData?.teamID === teamID;
+  if (!token || (token && token.user?.role < 1)) {
+    return res.status(401).json({
+      data: null,
+      error: "unauthorized",
+    });
+  }
 
-  logger.success({
-    data: firstData,
-    isEligible,
-  });
+  if (!name) {
+    const error = "'name' value needed";
+    return res.status(400).json({
+      data: null,
+      error,
+    });
+  }
 
-  return res.status(200).json({
-    data: firstData,
-    isEligible,
-    error: null,
-  });
+  if (!collectionID) {
+    const error = "'collectionID' value needed";
+    return res.status(400).json({
+      data: null,
+      error,
+    });
+  }
+
+  return res.json(await methodHandler.postNewCollection(token, collectionID, name))
 });
 
 export default handler;

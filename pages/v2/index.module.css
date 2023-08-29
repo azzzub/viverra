@@ -5,7 +5,7 @@
 }
 
 .search__container {
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 .input__mtcm {
@@ -14,4 +14,17 @@
 
 .row {
   cursor: pointer;
+}
+
+.action__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modal__container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
 }

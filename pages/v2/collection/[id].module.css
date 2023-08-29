@@ -15,3 +15,26 @@
 .row {
   cursor: pointer;
 }
+
+.title__container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.title__name {
+  margin: 4px 0 !important;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.title__mtcm {
+  font-weight: bold;
+  font-size: x-large;
+  margin: 4px 0;
+  min-width: 180px;
+}
