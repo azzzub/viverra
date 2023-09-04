@@ -9,11 +9,10 @@ import Head from "next/head";
 import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import { useMutation, useQuery } from "react-query";
-import { Table, Input, Space, message, Button, Modal } from "antd";
+import { Table, Input, Space, message, Button, Modal, Tag } from "antd";
 
 // Local deps
 import styles from "./index.module.css";
-import { CollectionTableColumns } from "./index.constant";
 
 export default function Home() {
   const router = useRouter();
@@ -79,6 +78,11 @@ export default function Home() {
           type: "success",
           content: "New collection successfuly created!"
         })
+        setNewCollection({
+          collectionID: "",
+          name: "",
+        })
+        collectionsQuery.refetch();
       },
       onError(err: any) {
         if (err?.response?.status !== 401) {
@@ -99,6 +103,34 @@ export default function Home() {
   function handleNewCollectionModalCancel() {
     setIsNewCollectionModalOpen(false)
   }
+
+  const CollectionTableColumns = [
+    {
+      title: "Last Check",
+      dataIndex: "lastCheckAt",
+      key: "lastCheckAt",
+      width: "15%",
+    },
+    {
+      title: "MTCM",
+      dataIndex: "id",
+      key: "id",
+      width: "15%",
+      render: (item: any) => <Tag>MTCM-{item}</Tag>,
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: "15%",
+      render: (item: any) => <Tag color={item?.color}>{item?.message}</Tag>,
+    },
+  ];
 
   return (
     <>
@@ -145,8 +177,8 @@ export default function Home() {
         />
         <Modal title="Create New Collection" open={isNewCollectionModalOpen} onOk={handleNewCollectionModalOk} onCancel={handleNewCollectionModalCancel}>
           <div className={styles.modal__container}>
-            <Input addonBefore="MTCM-" placeholder="000000" required onChange={(e) => setNewCollection({ ...newCollection, collectionID: e.target.value })} />
-            <Input placeholder="Your collection name" required onChange={(e) => setNewCollection({ ...newCollection, name: e.target.value })} />
+            <Input addonBefore="MTCM-" placeholder="000000" required value={newCollection.collectionID} onChange={(e) => setNewCollection({ ...newCollection, collectionID: e.target.value })} />
+            <Input placeholder="Your collection name" required value={newCollection.name} onChange={(e) => setNewCollection({ ...newCollection, name: e.target.value })} />
           </div>
         </Modal>
       </main>

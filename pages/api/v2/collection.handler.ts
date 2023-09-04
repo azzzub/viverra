@@ -93,7 +93,7 @@ export const getDetailedCollection = async (teamID: any, id: string) => {
     });
 
     // @ts-ignore(
-    firstData["matchingRate"] = (100 - (totalDiff / counterAvg)).toFixed(2)
+    firstData["matchingRate"] = counterAvg === 0 ? "-" : (100 - (totalDiff / counterAvg)).toFixed(2)
 
     // @ts-ignore
     firstData["reviewedSnapshot"] = firstData?.Page.length === 0 ? "-/-" : totalReviewed + "/" + firstData?.Page.length
