@@ -7,7 +7,7 @@ import axios from "axios";
 
 import { signIn, useSession } from "next-auth/react";
 import { useQuery } from "react-query";
-import { Table, Input, Space, Tag, Typography, message } from "antd";
+import { Table, Tag, Typography, message, Card, Statistic } from "antd";
 
 import styles from "./[id].module.css";
 
@@ -98,19 +98,44 @@ export default function Home() {
         <title>Collection - Viverra</title>
       </Head>
       <main className={styles.main}>
-        <div className={styles.title__container}>
-        <Typography.Text code className={styles.title__mtcm}>MTCM-{collectionQuery?.data?.data?.data?.id}</Typography.Text>
-        <Typography.Title level={3} className={styles.title__name}>{collectionQuery?.data?.data?.data?.name}</Typography.Title>
-        </div>
+        <Card size="small">
+          <div className={styles.title__container}>
+            <div className={styles.desc__container}>
+              <Typography.Text>
+                Collection ID:
+                <Typography.Text code>
+                  MTCM-{collectionQuery.data?.data?.data?.id}
+                </Typography.Text>
+              </Typography.Text>
+              <Typography.Text>
+                Collection Name:{" "}
+                <b> {collectionQuery.data?.data?.data?.name}</b>
+              </Typography.Text>
+            </div>
+            <div className={styles.stats}>
+
+            <Statistic
+              title="Avg Matching Rate"
+              value={collectionQuery.data?.data?.data?.matchingRate || 0}
+              suffix="%"
+            />
+            <Statistic
+              title="Reviewed Snapshot"
+              value={collectionQuery.data?.data?.data?.reviewedSnapshot}
+            />
+            </div>
+          </div>
+        </Card>
         <Table
           dataSource={collectionQuery?.data?.data?.data?.Page}
           rowKey="id"
           columns={columns}
           rowClassName={styles.row}
+          className={styles.table}
           onRow={(record) => {
             return {
               onClick: () => {
-                router.replace("/snapshot/" + record.id);
+                router.push("/v2/snapshot/" + record.id);
               },
             };
           }}

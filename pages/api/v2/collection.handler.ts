@@ -37,7 +37,20 @@ export const getDetailedCollection = async (teamID: any, id: string) => {
         },
     });
 
+    let counterAvg = 0;
+    let totalDiff = 0;
+    let totalReviewed = 0;
+
     firstData?.Page.forEach((page) => {
+        if (page?.diff === null || page?.diff >= 0) {
+            totalDiff = totalDiff + (page.diff || 0)
+            counterAvg++;
+        }
+
+        if (page?.diff === null || page?.diff === 0) {
+         totalReviewed++;   
+        }
+
         // @ts-ignore
         page["diffEasy"] = page.diff !== null ? page.diff?.toFixed(2) + "%" : "-";
 
@@ -78,6 +91,12 @@ export const getDetailedCollection = async (teamID: any, id: string) => {
                             color: "red",
                         };
     });
+
+    // @ts-ignore(
+    firstData["matchingRate"] = (100 - (totalDiff / counterAvg)).toFixed(2)
+
+    // @ts-ignore
+    firstData["reviewedSnapshot"] = firstData?.Page.length === 0 ? "-/-" : totalReviewed + "/" + firstData?.Page.length
 
     const isEligible = firstData?.teamID === teamID;
 
@@ -181,7 +200,7 @@ export const getAllCollections = async (token: any, mtcm: string | undefined, na
                     color: "green",
                 }
                 : {
-                    message: "Unreviewed",
+                    message: (failed + error) + "/" + collection.Page.length + " Unreviewed",
                     color: "orange",
                 };
     });

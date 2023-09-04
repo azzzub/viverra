@@ -5,7 +5,7 @@ import "primeicons/primeicons.css"; //icons
 
 // Global style
 // import "@picocss/pico";
-// import "../styles/globals.css";
+import "../styles/globals.css";
 
 // External
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -15,6 +15,7 @@ import axios from "axios";
 
 // Next deps
 import type { AppProps } from "next/app";
+import { Layout } from "antd";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 axios.defaults.withCredentials = true;
@@ -26,17 +27,28 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
+  const contentStyle: React.CSSProperties = {
+    minHeight: "calc(100vh - 120px);",
+    lineHeight: '120px',
+    color: '#fff',
+    padding: "32px",
+    float: "none",
+  };
+
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <SessionProvider session={session}>
-          {/* {process.env.NEXT_PUBLIC_BASE_URL === "http://127.0.0.1:3000" && (
-            <div className="badge-env">LOCAL</div>
-          )} */}
-          <Toaster />
-          <Component {...pageProps} />
-        </SessionProvider>
-      </QueryClientProvider>
+      <Layout>
+        <QueryClientProvider client={queryClient}>
+          <SessionProvider session={session}>
+            <Layout.Header>Viverra</Layout.Header>
+            <Layout.Content style={contentStyle}>
+              <Toaster />
+              <Component {...pageProps} />
+            </Layout.Content>
+            <Layout.Footer></Layout.Footer>
+          </SessionProvider>
+        </QueryClientProvider>
+      </Layout>
     </>
   );
 }
