@@ -59,7 +59,6 @@ export default function Masking({ res, cbNewRect, cb, disable }: any) {
   return (
     <div
       style={{
-        maxWidth: "560px",
         position: "relative",
       }}
     >
@@ -80,8 +79,8 @@ export default function Masking({ res, cbNewRect, cb, disable }: any) {
             +(e.target.naturalHeight / e.target.offsetHeight).toFixed(2)
           );
         }}
-        // width="100px"
-        // height="100px"
+        width="100%"
+        height="100%"
       />
       <div
         style={{

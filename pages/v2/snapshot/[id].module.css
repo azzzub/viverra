@@ -55,3 +55,9 @@
   font-size: large;
   text-transform: capitalize;
 }
+
+.masking__container {
+  display: flex;
+  flex-direction: row;
+  width: 100px !important;
+}

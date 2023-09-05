@@ -2,8 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 
 import axios from "axios";
-import NavHeader from "components/NavHeader";
-// import { GetServerSidePropsContext } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,19 +11,41 @@ import ReactCompareImage from "react-compare-image";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import styles from "./[id].module.css";
-import { Button, Card, Statistic, Typography } from "antd";
 import {
-  CheckCircleTwoTone,
+  Button,
+  Card,
+  Input,
+  Modal,
+  Statistic,
+  Typography,
+  message,
+} from "antd";
+import {
   CheckOutlined,
   CloseOutlined,
+  DownloadOutlined,
   ExclamationOutlined,
   EyeInvisibleOutlined,
+  PlusOutlined,
+  SaveOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
+import dynamic from "next/dynamic";
+import copy from "copy-to-clipboard";
+
+const Masking = dynamic(() => import("components/Masking"), {
+  ssr: false,
+});
 
 export default function SnapshotDetail() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { data, status } = useSession();
+  const [isModalMaskingOpen, setIsModalMaskingOpen] = useState(false);
+  const [newMasking, setNewMasking] = useState(0);
+  const [masking, setMasking] = useState([]);
+  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
+  const [exportedMasking, setExportedMasking] = useState("");
 
   // Get the snapshot detail
   const snapshotDetailQuery = useQuery(
@@ -70,6 +90,28 @@ export default function SnapshotDetail() {
         }
         router.replace(router.asPath);
       }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || error.message);
+    } finally {
+      setIsLoading(false);
+      snapshotDetailQuery.refetch();
+    }
+  }
+
+  async function updateMasking() {
+    try {
+      setIsLoading(true);
+
+      const res = await axios.post("/api/masking", {
+        pageID: router.query?.id,
+        masking: JSON.stringify(masking),
+      });
+      if (res) {
+        toast.success("success update masking");
+      }
+      setIsModalMaskingOpen(false);
+      setNewMasking(0);
+      setMasking([]);
     } catch (error: any) {
       toast.error(error?.response?.data?.error || error.message);
     } finally {
@@ -123,6 +165,7 @@ export default function SnapshotDetail() {
           <Button
             icon={<EyeInvisibleOutlined rev={undefined} />}
             disabled={snapshotDetailQuery.data?.data?.data?.isEligible}
+            onClick={() => setIsModalMaskingOpen(true)}
           >
             Masking
           </Button>
@@ -134,6 +177,10 @@ export default function SnapshotDetail() {
                 snapshotDetailQuery.data?.data?.data?.isEligible ||
                 snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 1
               }
+              onClick={() => {
+                approval(true);
+              }}
+              loading={isLoading}
             >
               Approve
             </Button>
@@ -145,6 +192,10 @@ export default function SnapshotDetail() {
                 snapshotDetailQuery.data?.data?.data?.isEligible ||
                 snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 1
               }
+              onClick={() => {
+                approval(false);
+              }}
+              loading={isLoading}
             >
               Reject
             </Button>
@@ -248,43 +299,94 @@ export default function SnapshotDetail() {
                 </div>
               )}
             </div>
-            {/* {snapshotDetailQuery.data?.data?.data?.diff < 0 ? (
-                <pre>
-                  COMPARISON ERROR! <br />
-                  <br />
-                  message:{" "}
-                  {
-                    snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.note
-                  }{" "}
-                  <br />
-                  <br />
-                  <a
-                    href={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[0]?.filename}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    expectation image
-                  </a>
-                  <br />
-                  <a
-                    href={`/api/img/snapshots/${snapshotDetailQuery.data?.data?.data?.Snapshot?.[1]?.filename}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    actual image
-                  </a>
-                </pre>
-            ) : (
-              // <img
-              //   src={`/api/img/snapshots/diff/${snapshotDetailQuery.data?.data?.data?.id}.png`}
-              //   alt="diff"
-              // />
-              <></>
-            )} */}
           </>
         )}
         <br />
       </main>
+      <Modal
+        title="Import Masking Data"
+        open={isModalExportOpen}
+        onCancel={() => setIsModalExportOpen(false)}
+        onOk={async ()=>{
+          try {
+            const parsing = JSON.parse(exportedMasking)
+            setMasking(parsing)
+            setExportedMasking("")
+            setIsModalExportOpen(false)
+          } catch (error) {
+            message.error("Your masking data is invalid JSON object!")
+          } finally {
+            updateMasking()
+          }
+        }}
+      >
+        <div className={styles.modal__container}>
+          <Input
+            placeholder="Paste your exported masking here..."
+            required
+            value={exportedMasking}
+            onChange={(e) => setExportedMasking(e.target.value)}
+          />
+        </div>
+      </Modal>
+      <Modal
+        title={"Masking - " + snapshotDetailQuery.data?.data?.data?.name}
+        open={isModalMaskingOpen}
+        style={{
+          top:30
+        }}
+        width="85%"
+        onCancel={() => setIsModalMaskingOpen(false)}
+        footer={[
+          <Button
+            key="add"
+            onClick={() => setNewMasking(newMasking + 1)}
+            icon={<PlusOutlined rev={undefined} />}
+          >
+            Mask
+          </Button>,
+          <Button
+            key="export"
+            onClick={() => {
+              copy(JSON.stringify(masking));
+              message.success("Masking data copied to clipboard!");
+            }}
+            icon={<DownloadOutlined rev={undefined} />}
+            disabled
+          >
+            Export
+          </Button>,
+          <Button
+            key="import"
+            onClick={() => setIsModalExportOpen(true)}
+            icon={<UploadOutlined rev={undefined} />}
+            disabled
+          >
+            Import
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            icon={<SaveOutlined rev={undefined} />}
+            onClick={updateMasking}
+            loading={isLoading}
+          >
+            Save
+          </Button>,
+        ]}
+      >
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0  && (
+          <Masking
+            res={snapshotDetailQuery.data?.data}
+            cbNewRect={newMasking}
+            cb={(val: any) => setMasking(val)}
+            disable={
+              data?.user.role === 0 ||
+              !snapshotDetailQuery.data?.data?.isEligible
+            }
+          />
+        )}
+      </Modal>
     </>
   );
 }
