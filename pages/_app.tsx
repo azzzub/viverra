@@ -28,7 +28,7 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   const contentStyle: React.CSSProperties = {
-    minHeight: "calc(100vh - 120px);",
+    minHeight: "calc(100vh - 120px)",
     lineHeight: '120px',
     color: '#fff',
     padding: "32px",

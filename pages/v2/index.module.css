@@ -8,6 +8,7 @@
 
 .row {
   cursor: pointer;
+  text-transform: capitalize;
 }
 
 .action__container {

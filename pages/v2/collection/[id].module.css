@@ -67,6 +67,7 @@
 .desc__container {
   display: flex;
   flex-direction: column;
+  text-transform: capitalize;
 }
 
 .desc__container > * > * {
