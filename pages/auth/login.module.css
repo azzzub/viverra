@@ -1,0 +1,14 @@
+.container {
+    margin: auto;
+    width: 50%;
+}
+
+.card {
+    width: auto;
+}
+
+.card > * > *{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}

@@ -22,6 +22,10 @@ export default function Home() {
     searchCode: "",
   });
 
+  useEffect(()=>{
+    router.replace("/v2")
+  }, [])
+
   // Get the all collection
   const collectionsQuery = useQuery(
     "collections",
