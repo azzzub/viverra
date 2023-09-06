@@ -1,0 +1,19 @@
+.title {
+    color: antiquewhite;
+    font-weight: bold;
+    font-size: large;
+    padding-right: 48px;
+}
+
+.header__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__container > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

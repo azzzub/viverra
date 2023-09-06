@@ -61,6 +61,7 @@ export default function AdminUser() {
     <>
       <Head>
         <title>admin viverra - visual verifier</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"></link>
       </Head>
       <main className="container">
         <NavHeader />

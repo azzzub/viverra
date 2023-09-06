@@ -1,0 +1,6 @@
+.footer__container {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: right;
+}
