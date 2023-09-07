@@ -3,6 +3,7 @@ setup:
 	touch logs/logs.log
 	touch db/data.db
 	cp .env-example .env
+	npx prisma migrate reset --force
 	npx prisma db push
 	node ./utils/localAdmin.js
 
