@@ -164,7 +164,7 @@ export default function SnapshotDetail() {
         <div className={styles.header__container}>
           <Button
             icon={<EyeInvisibleOutlined rev={undefined} />}
-            disabled={snapshotDetailQuery.data?.data?.data?.isEligible}
+            disabled={!snapshotDetailQuery.data?.data?.isEligible}
             onClick={() => setIsModalMaskingOpen(true)}
           >
             Masking
@@ -174,7 +174,7 @@ export default function SnapshotDetail() {
               type="primary"
               icon={<CheckOutlined rev={undefined} />}
               disabled={
-                snapshotDetailQuery.data?.data?.data?.isEligible ||
+                !snapshotDetailQuery.data?.data?.isEligible ||
                 snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 1
               }
               onClick={() => {
@@ -189,7 +189,7 @@ export default function SnapshotDetail() {
               type="primary"
               icon={<CloseOutlined rev={undefined} />}
               disabled={
-                snapshotDetailQuery.data?.data?.data?.isEligible ||
+                !snapshotDetailQuery.data?.data?.isEligible ||
                 snapshotDetailQuery.data?.data?.data?.Snapshot?.length === 1
               }
               onClick={() => {
@@ -342,6 +342,7 @@ export default function SnapshotDetail() {
             key="add"
             onClick={() => setNewMasking(newMasking + 1)}
             icon={<PlusOutlined rev={undefined} />}
+            disabled={!snapshotDetailQuery?.data?.data?.isEligible}
           >
             Mask
           </Button>,
@@ -370,6 +371,7 @@ export default function SnapshotDetail() {
             icon={<SaveOutlined rev={undefined} />}
             onClick={updateMasking}
             loading={isLoading}
+            disabled={!snapshotDetailQuery?.data?.data?.isEligible}
           >
             Save
           </Button>,
