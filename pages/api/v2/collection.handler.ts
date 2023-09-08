@@ -1,5 +1,5 @@
 // External
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { formatDistance } from "date-fns";
 
 // Local
@@ -114,7 +114,21 @@ export const getDetailedCollection = async (teamID: any, id: string) => {
  * @param name name
  * @returns JSON
  */
-export const getAllCollections = async (token: any, mtcm: string | undefined, name: string | undefined) => {
+export const getAllCollections = async (token: any, mtcm: string | undefined, name: string | undefined, tags: string | undefined) => {
+    let _tags: any[] = []
+    if (tags && tags !== "") {
+        const _ = tags?.split(',')
+        if (_.length !== 0) {
+            _.map((v: any)=> {
+                _tags.push({
+                    tags: {
+                        contains: v
+                    },
+                })
+            } )
+        }
+    }
+
     // Get collection data
     const allData = await prisma.collection.findMany({
         include: {
@@ -139,6 +153,7 @@ export const getAllCollections = async (token: any, mtcm: string | undefined, na
             name: {
                 contains: name,
             },
+            AND: _tags
         },
     });
 
@@ -212,7 +227,7 @@ export const getAllCollections = async (token: any, mtcm: string | undefined, na
     };
 }
 
-export const postNewCollection = async (token: any, collectionID: any, name: any,) => {
+export const postNewCollection = async (token: any, collectionID: any, name: any, tags: string) => {
     const myTeam = await prisma.user.findFirst({
         where: {
             id: token.user.id,
@@ -228,13 +243,41 @@ export const postNewCollection = async (token: any, collectionID: any, name: any
 
     const teamID = myTeam?.Team?.id || null;
 
+    try {
     const collection = await prisma.collection.create({
         data: {
             id: collectionID,
             name,
             teamID,
+            tags: tags || null
         },
     });
+
+    return {
+        data: collection,
+        error: null,
+    };
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                throw new Error(JSON.stringify({
+                    message: "Collection ID already exist!",
+                    stack: error.stack
+                }))
+            }
+          }
+        
+    }
+
+}
+
+export const putEditCollection = async (collectionID: any, name: any, tags: string) => {
+    const collection = await prisma.collection.update({data: {
+        name,
+        tags: tags || null
+    }, where: {
+        id: collectionID
+    }});
 
     return {
         data: collection,

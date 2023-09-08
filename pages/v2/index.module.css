@@ -6,6 +6,10 @@
   width: 50%;
 }
 
+.input__mtcm__long {
+  width: 100%;
+}
+
 .row {
   cursor: pointer;
   text-transform: capitalize;

@@ -18,11 +18,23 @@ const handler = nextConnect({
       .end(JSON.stringify({ error: `method '${req.method}' not allowed` }));
   },
   onError(err, req, res) {
-    const logger = new LoggerAPI(req, res);
-    logger.error(err);
-    return res
-      .status(500)
-      .end(JSON.stringify({ error: "something broke", stack: err.message }));
+    let parser = {
+      message: "something broke",
+      stack: null
+    }
+
+    try {
+      parser = JSON.parse(err.message)
+      return res
+        .status(500)
+        .end(JSON.stringify({ error: parser.message, stack: parser.stack }));
+    } catch (error) {
+      const logger = new LoggerAPI(req, res);
+      logger.error(err);
+      return res
+        .status(500)
+        .end(JSON.stringify({ error: "something broke", stack: err.message }));
+    }
   },
 });
 

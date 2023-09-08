@@ -107,22 +107,40 @@ export default function Home() {
                   MTCM-{collectionQuery.data?.data?.data?.id}
                 </Typography.Text>
               </Typography.Text>
+
+              <Typography.Text>
+                Collection Tags:{" "}
+                {!collectionQuery.data?.data?.data?.tags
+                  ? "-"
+                  : collectionQuery.data?.data?.data?.tags
+                      .split(",")
+                      .map((v: any, id: any) => (
+                        <Tag
+                          style={{
+                            fontSize: "small",
+                            textTransform: "none",
+                          }}
+                          key={id}
+                        >
+                          {v}
+                        </Tag>
+                      ))}
+              </Typography.Text>
               <Typography.Text>
                 Collection Name:{" "}
                 <b> {collectionQuery.data?.data?.data?.name}</b>
               </Typography.Text>
             </div>
             <div className={styles.stats}>
-
-            <Statistic
-              title="Avg Matching Rate"
-              value={collectionQuery.data?.data?.data?.matchingRate || 0}
-              suffix="%"
-            />
-            <Statistic
-              title="Reviewed Snapshot"
-              value={collectionQuery.data?.data?.data?.reviewedSnapshot}
-            />
+              <Statistic
+                title="Avg Matching Rate"
+                value={collectionQuery.data?.data?.data?.matchingRate || 0}
+                suffix="%"
+              />
+              <Statistic
+                title="Reviewed Snapshot"
+                value={collectionQuery.data?.data?.data?.reviewedSnapshot}
+              />
             </div>
           </div>
         </Card>
