@@ -1,7 +1,8 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable @next/next/no-img-element */
 
 // React deps
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Next deps
 import Head from "next/head";

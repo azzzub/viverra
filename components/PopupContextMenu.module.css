@@ -1,10 +1,10 @@
 @keyframes fadeIn {
-	0% {
-		transform: translateY(-25%);
-	}	
-	20% {
-		transform: translateY(0%);
-	}		
+  0% {
+    transform: translateY(-25%);
+  }
+  20% {
+    transform: translateY(0%);
+  }
 }
 
 .popup {
@@ -35,9 +35,9 @@
   line-height: 22px;
   margin: 0;
   padding: 5px 12px;
-  transition: all .3s;
+  transition: all 0.3s;
   white-space: nowrap;
-  -webkit-transition: all .3s;
+  -webkit-transition: all 0.3s;
 }
 
 .popup li:hover {

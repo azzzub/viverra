@@ -19,7 +19,7 @@ handler.get("/api/team", async (req, res) => {
     });
   }
 
-  let myTeam = await prisma.user.findFirst({
+  const myTeam = await prisma.user.findFirst({
     where: {
       id: token.user?.id,
     },

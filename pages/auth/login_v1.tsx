@@ -1,3 +1,5 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
 import NavHeader from "components/NavHeader";
 import { signIn } from "next-auth/react";
 import Head from "next/head";

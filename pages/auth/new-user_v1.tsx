@@ -1,3 +1,5 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
 import axios from "axios";
 import NavHeader from "components/NavHeader";
 import Head from "next/head";
@@ -16,7 +18,7 @@ export default function NewUser() {
   async function signUp() {
     setIsLoading(true);
     try {
-      const res = await axios.post("/api/auth/register", {
+      await axios.post("/api/auth/register", {
         username,
         password,
       });

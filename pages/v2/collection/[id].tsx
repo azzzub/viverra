@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import axios from "axios";
@@ -11,15 +11,10 @@ import { Table, Tag, Typography, message, Card, Statistic } from "antd";
 
 import styles from "./[id].module.css";
 
-export default function Home() {
+const CollectionDetailPage = () => {
   const router = useRouter();
-  const { data, status } = useSession();
+  const { status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [search, setSearch] = useState({
-    searchName: "",
-    searchCode: "",
-  });
 
   // Unauthenticated user redirect to sign in
   useEffect(() => {
@@ -161,4 +156,6 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+export default CollectionDetailPage;

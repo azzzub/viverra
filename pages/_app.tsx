@@ -1,3 +1,7 @@
+/* eslint-disable require-jsdoc */
+// React deps
+import React from "react";
+
 // Global style
 import "../styles/globals.css";
 
@@ -37,7 +41,7 @@ export default function App({
       <Layout>
         <QueryClientProvider client={queryClient}>
           <SessionProvider session={session}>
-            <Layout.Header >
+            <Layout.Header>
               <Header />
             </Layout.Header>
             <Layout.Content style={contentStyle}>

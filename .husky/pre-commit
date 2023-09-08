@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo '🏗️👷 Styling, testing and building your project before committing'
+
+# Check Prettier standards
+yarn check-format 
+
+# Check ESLint Standards
+yarn check-lint 
+
+# Check tsconfig standards
+yarn check-types
+
+yarn build
+
+echo '✅ OK ✅'
+

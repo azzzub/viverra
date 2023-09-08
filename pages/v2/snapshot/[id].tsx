@@ -4,9 +4,8 @@
 import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactCompareImage from "react-compare-image";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
@@ -24,7 +23,6 @@ import {
   CheckOutlined,
   CloseOutlined,
   DownloadOutlined,
-  ExclamationOutlined,
   EyeInvisibleOutlined,
   PlusOutlined,
   SaveOutlined,
@@ -37,7 +35,7 @@ const Masking = dynamic(() => import("components/Masking"), {
   ssr: false,
 });
 
-export default function SnapshotDetail() {
+const SnapshotDetailPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { data, status } = useSession();
@@ -74,6 +72,10 @@ export default function SnapshotDetail() {
     }
   }, [router]);
 
+  /**
+   * Approval query function
+   * @param {boolean} status approval status, true: approve, false: reject
+   */
   async function approval(status: boolean) {
     try {
       setIsLoading(true);
@@ -98,6 +100,9 @@ export default function SnapshotDetail() {
     }
   }
 
+  /**
+   * Update masking query function
+   */
   async function updateMasking() {
     try {
       setIsLoading(true);
@@ -307,16 +312,16 @@ export default function SnapshotDetail() {
         title="Import Masking Data"
         open={isModalExportOpen}
         onCancel={() => setIsModalExportOpen(false)}
-        onOk={async ()=>{
+        onOk={async () => {
           try {
-            const parsing = JSON.parse(exportedMasking)
-            setMasking(parsing)
-            setExportedMasking("")
-            setIsModalExportOpen(false)
+            const parsing = JSON.parse(exportedMasking);
+            setMasking(parsing);
+            setExportedMasking("");
+            setIsModalExportOpen(false);
           } catch (error) {
-            message.error("Your masking data is invalid JSON object!")
+            message.error("Your masking data is invalid JSON object!");
           } finally {
-            updateMasking()
+            updateMasking();
           }
         }}
       >
@@ -333,7 +338,7 @@ export default function SnapshotDetail() {
         title={"Masking - " + snapshotDetailQuery.data?.data?.data?.name}
         open={isModalMaskingOpen}
         style={{
-          top:30
+          top: 30,
         }}
         width="85%"
         onCancel={() => setIsModalMaskingOpen(false)}
@@ -377,7 +382,7 @@ export default function SnapshotDetail() {
           </Button>,
         ]}
       >
-        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0  && (
+        {snapshotDetailQuery.data?.data?.data?.Snapshot?.length > 0 && (
           <Masking
             res={snapshotDetailQuery.data?.data}
             cbNewRect={newMasking}
@@ -391,4 +396,6 @@ export default function SnapshotDetail() {
       </Modal>
     </>
   );
-}
+};
+
+export default SnapshotDetailPage;

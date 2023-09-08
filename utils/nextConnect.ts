@@ -20,11 +20,11 @@ const handler = nextConnect({
   onError(err, req, res) {
     let parser = {
       message: "something broke",
-      stack: null
-    }
+      stack: null,
+    };
 
     try {
-      parser = JSON.parse(err.message)
+      parser = JSON.parse(err.message);
       return res
         .status(500)
         .end(JSON.stringify({ error: parser.message, stack: parser.stack }));

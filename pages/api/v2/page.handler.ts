@@ -3,9 +3,8 @@ import { formatDistance } from "date-fns";
 
 const prisma = new PrismaClient();
 
-export const getDetailedPage =  async (teamID: string, id: string) => {
-
-const firstData = await prisma.page.findFirst({
+export const getDetailedPage = async (teamID: string, id: string) => {
+  const firstData = await prisma.page.findFirst({
     where: {
       id,
     },
@@ -32,9 +31,9 @@ const firstData = await prisma.page.findFirst({
   firstData?.Snapshot.forEach((ss) => {
     // @ts-ignore
     ss["capturedAt"] = formatDistance(ss.updatedAt, new Date(), {
-            addSuffix: true,
-        });
-  })
+      addSuffix: true,
+    });
+  });
 
   const isEligible = firstData?.Collection?.teamID === teamID;
 
@@ -43,4 +42,4 @@ const firstData = await prisma.page.findFirst({
     isEligible,
     error: null,
   };
-} 
+};

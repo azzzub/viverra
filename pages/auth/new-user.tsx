@@ -1,13 +1,13 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input } from "antd";
 import axios from "axios";
-import NavHeader from "components/NavHeader";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-// import { GetServerSidePropsContext } from "next";
 import styles from "./login.module.css";
 
 export default function NewUser() {
@@ -19,7 +19,7 @@ export default function NewUser() {
   async function signUp() {
     setIsLoading(true);
     try {
-      const res = await axios.post("/api/auth/register", {
+      await axios.post("/api/auth/register", {
         username,
         password,
       });
@@ -84,7 +84,7 @@ export default function NewUser() {
               />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={isLoading}>
                 Register
               </Button>{" "}
               Or <Link href="/auth/login">login now!</Link>

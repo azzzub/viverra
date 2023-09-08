@@ -1,6 +1,8 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
+
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input } from "antd";
-import NavHeader from "components/NavHeader";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -16,7 +18,7 @@ export default function SignIn() {
     password: "",
   });
 
-  const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
+  const submitHandler: FormEventHandler<HTMLFormElement> = async () => {
     try {
       const res = await signIn("credentials", {
         username: userSession.username,

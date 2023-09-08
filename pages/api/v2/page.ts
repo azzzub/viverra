@@ -20,7 +20,7 @@ handler.get("/api/v2/page", async (req, res) => {
   const teamID = token.user?.teamID;
 
   if (id) {
-    return res.status(200).json(await getDetailedPage(teamID, id))
+    return res.status(200).json(await getDetailedPage(teamID, id));
   }
 });
 

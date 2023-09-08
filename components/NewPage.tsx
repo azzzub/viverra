@@ -1,5 +1,6 @@
+/* eslint-disable require-jsdoc */
 import axios from "axios";
-import { FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function NewPage({ cb, collectionID }: any) {

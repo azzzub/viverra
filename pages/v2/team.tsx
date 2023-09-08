@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 
 // React deps
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Next deps
 import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/router";
 
 // External
 import axios from "axios";
@@ -15,7 +13,7 @@ import { signIn, useSession } from "next-auth/react";
 
 // Local
 import { useMutation, useQuery } from "react-query";
-import { Alert, Button, Form, Input, Typography } from "antd";
+import { Alert, Button, Form, Input } from "antd";
 import styles from "./team.module.css";
 import {
   EditOutlined,
@@ -27,10 +25,8 @@ const getMyTeam = async () => await axios.get("/api/team");
 
 const updateMyTeam = async (v: any) => await axios.post("/api/team", v);
 
-export default function MyTeam() {
-  const router = useRouter();
-
-  const { data, status } = useSession();
+const MyTeamPage = () => {
+  const { status } = useSession();
 
   const [isEdit, setIsEdit] = useState(false);
   const [webhookTemp, setWebhookTemp] = useState("");
@@ -98,9 +94,7 @@ export default function MyTeam() {
       </Head>
       <main className={styles.container}>
         {myTeamQuery.data?.data?.data?.Team && (
-          <Form
-            labelCol={{ span: 3 }}
-          >
+          <Form labelCol={{ span: 3 }}>
             <Form.Item label="Team ID">
               <Input value={value.id} disabled />
             </Form.Item>
@@ -158,7 +152,14 @@ export default function MyTeam() {
                       <EditOutlined rev={undefined} />
                     )
                   }
-                  onClick={() => setIsEdit(!isEdit)}
+                  onClick={() => {
+                    if (!isEdit) {
+                      setValue({ ...value, webhook: "" });
+                    } else {
+                      setValue({ ...value, webhook: webhookTemp });
+                    }
+                    setIsEdit(!isEdit);
+                  }}
                   disabled={myTeamMutation.isLoading || myTeamQuery.isLoading}
                 >
                   {isEdit ? "Finish" : "Edit"}
@@ -185,4 +186,6 @@ export default function MyTeam() {
       </main>
     </>
   );
-}
+};
+
+export default MyTeamPage;

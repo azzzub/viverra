@@ -1,6 +1,7 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import axios from "axios";
@@ -22,9 +23,9 @@ export default function Home() {
     searchCode: "",
   });
 
-  useEffect(()=>{
-    router.replace("/v2")
-  }, [])
+  useEffect(() => {
+    router.replace("/v2");
+  }, []);
 
   // Get the all collection
   const collectionsQuery = useQuery(

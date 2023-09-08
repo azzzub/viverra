@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -20,8 +21,8 @@ export default async function sendSlack(summary: TestResult) {
   let footer = `All good folks! ${summary.teamMention}`;
 
   if (summary.failed > 0) {
-//     footer = `${summary.teamMention} Failed snapshots:\n${summary.listOfFailedSS}`;
-    footer = `There are a diff on some snapshots, please check ${summary.teamMention}`
+    //     footer = `${summary.teamMention} Failed snapshots:\n${summary.listOfFailedSS}`;
+    footer = `There are a diff on some snapshots, please check ${summary.teamMention}`;
   }
 
   const res = await axios.post(url, {
@@ -30,19 +31,22 @@ export default async function sendSlack(summary: TestResult) {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Visual Testing Viverra Report* ~ _${format(new Date(), "PPpp")}_\n*${summary.title}*`,
+          text: `*Visual Testing Viverra Report* ~ _${format(
+            new Date(),
+            "PPpp"
+          )}_\n*${summary.title}*`,
         },
       },
-//       {
-//         type: "section",
-//         text: {
-//           type: "mrkdwn",
-//           text: `*${summary.teamName} • ${summary.title}*`,
-//         },
-//       },
-//       {
-//         type: "divider",
-//       },
+      //       {
+      //         type: "section",
+      //         text: {
+      //           type: "mrkdwn",
+      //           text: `*${summary.teamName} • ${summary.title}*`,
+      //         },
+      //       },
+      //       {
+      //         type: "divider",
+      //       },
       {
         type: "section",
         text: {

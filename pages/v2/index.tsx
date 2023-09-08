@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 // React/Next deps
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 
@@ -15,9 +15,9 @@ import { Table, Input, Space, message, Button, Modal, Tag } from "antd";
 import styles from "./index.module.css";
 import PopupContextMenu from "components/PopupContextMenu";
 
-export default function Home() {
+const CollectionsPage = () => {
   const router = useRouter();
-  const { data, status } = useSession();
+  const { status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
   const [isNewCollectionModalOpen, setIsNewCollectionModalOpen] =
     useState(false);
@@ -63,7 +63,7 @@ export default function Home() {
         params: {
           mtcm: search.searchCode,
           name: search.searchName,
-          tags: search.searchTags
+          tags: search.searchTags,
         },
       });
     },
@@ -148,14 +148,6 @@ export default function Home() {
     }
   );
 
-  function handleNewCollectionModalOk() {
-    newCollectionMutation.mutate();
-  }
-
-  function handleNewCollectionModalCancel() {
-    setIsNewCollectionModalOpen(false);
-  }
-
   const CollectionTableColumns = [
     {
       title: "Last Check",
@@ -184,7 +176,18 @@ export default function Home() {
         const _item = item?.split(",");
         return !_item
           ? "-"
-          : _item?.map((v: any, id: any) => <Tag style={{textTransform:"none", marginInlineEnd: "2px", marginBottom:"2px"}} key={id}>{v}</Tag>);
+          : _item?.map((v: any, id: any) => (
+              <Tag
+                style={{
+                  textTransform: "none",
+                  marginInlineEnd: "2px",
+                  marginBottom: "2px",
+                }}
+                key={id}
+              >
+                {v}
+              </Tag>
+            ));
       },
     },
     {
@@ -287,8 +290,8 @@ export default function Home() {
         <Modal
           title="Create New Collection"
           open={isNewCollectionModalOpen}
-          onOk={handleNewCollectionModalOk}
-          onCancel={handleNewCollectionModalCancel}
+          onOk={() => newCollectionMutation.mutate()}
+          onCancel={() => setIsNewCollectionModalOpen(false)}
         >
           <div className={styles.modal__container}>
             <Input
@@ -315,7 +318,10 @@ export default function Home() {
               placeholder="Your collection tags"
               value={newCollection.tags}
               onChange={(e) =>
-                setNewCollection({ ...newCollection, tags: e.target.value.replace(/\s/g, '') })
+                setNewCollection({
+                  ...newCollection,
+                  tags: e.target.value.replace(/\s/g, ""),
+                })
               }
             />
           </div>
@@ -348,7 +354,10 @@ export default function Home() {
               placeholder="Your collection tags"
               value={editCollection.tags || ""}
               onChange={(e) =>
-                setEditCollection({ ...editCollection, tags: e.target.value.replace(/\s/g, '') })
+                setEditCollection({
+                  ...editCollection,
+                  tags: e.target.value.replace(/\s/g, ""),
+                })
               }
             />
           </div>
@@ -356,4 +365,6 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+export default CollectionsPage;

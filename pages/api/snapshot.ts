@@ -197,7 +197,7 @@ handler.post("/api/snapshot", async (req, res) => {
 
   try {
     comparison = pixelmatch(img1.data, img2.data, diff.data, width, height, {
-      threshold: threshold ? +threshold : 0.1
+      threshold: threshold ? +threshold : 0.1,
     });
 
     diffPercentage = +((comparison * 100) / (width * height)).toFixed(2);

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, Menu, MenuProps, Typography } from "antd";
 import { signOut, useSession } from "next-auth/react";
@@ -21,24 +23,23 @@ const Header = () => {
 
   return (
     <div className={styles.header__container}>
-        <div>
-
-      <Typography.Text className={styles.title} >
-        Viverra - Visual Test
-      </Typography.Text>
-      <Menu
-        theme="dark"
-        mode="horizontal"
-        selectedKeys={router.pathname === "/v2" ? ["collection"]: [""]}
-        items={[
-          {
-            key: "collection",
-            label: "Collection",
-            onClick: ()=> router.push('/v2')
-          },
-        ]}
-      />
-        </div>
+      <div>
+        <Typography.Text className={styles.title}>
+          Viverra - Visual Test
+        </Typography.Text>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          selectedKeys={router.pathname === "/v2" ? ["collection"] : [""]}
+          items={[
+            {
+              key: "collection",
+              label: "Collection",
+              onClick: () => router.push("/v2"),
+            },
+          ]}
+        />
+      </div>
       {status === "authenticated" && (
         <Dropdown
           menu={{ items }}

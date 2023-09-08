@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 import pino from "pino";

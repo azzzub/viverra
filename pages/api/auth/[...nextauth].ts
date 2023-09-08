@@ -11,6 +11,7 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   providers: [
+    // eslint-disable-next-line new-cap
     CredentialsProvider({
       name: "Credentials",
       credentials: {},
@@ -64,4 +65,6 @@ export const authOptions: AuthOptions = {
     },
   },
 };
+
+// eslint-disable-next-line new-cap
 export default NextAuth(authOptions);
