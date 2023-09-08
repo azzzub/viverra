@@ -28,7 +28,7 @@ run `make setup` and follow the instruction
 
 then, run `make serve-pm2`
 
-viverra will serve on port :3000
+viverra will serve on port :4848
 
 _restarting the viverra service in `pm2`, run this command `make restart-pm2`_
 
@@ -40,7 +40,7 @@ run `make setup` and follow the instruction
 
 then, run `make serve-yarn`
 
-viverra will serve on port :3000
+viverra will serve on port :4848
 
 <br/>
 
@@ -62,7 +62,7 @@ _ref: https://github.com/prisma/studio_
 
 **> known issue and how to solve it**
 
-if you encounter some issue such as `connect ECONNREFUSED ::1:3000` in the homepage, **please replace your URL and `NEXT_PUBLIC_BASE_URL` variable on `.env` file** from `http://localhost:3000` to `http://127.0.0.1:3000`
+if you encounter some issue such as `connect ECONNREFUSED ::1:4848` in the homepage, **please replace your URL and `NEXT_PUBLIC_BASE_URL` variable on `.env` file** from `http://localhost:4848` to `http://127.0.0.1:4848`
 
 <br/>
 
