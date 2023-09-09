@@ -5,6 +5,8 @@ import { Avatar, Dropdown, Menu, MenuProps, Typography } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import styles from "./Header.module.css";
+import Image from "next/image";
+import Link from "next/link";
 
 const Header = () => {
   const router = useRouter();
@@ -24,9 +26,18 @@ const Header = () => {
   return (
     <div className={styles.header__container}>
       <div>
-        <Typography.Text className={styles.title}>
-          Viverra - Visual Test
-        </Typography.Text>
+        <Link href="/v2" className={styles.left__container}>
+          <Image
+            alt="Viverra Mascot"
+            src="/viverra-mascot.png"
+            width={48}
+            height={48}
+            className={styles.mascot}
+          />
+          <Typography.Text className={styles.title}>
+            Viverra - Visual Test
+          </Typography.Text>
+        </Link>
         <Menu
           theme="dark"
           mode="horizontal"

@@ -9,11 +9,25 @@ import Head from "next/head";
 import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import { useMutation, useQuery } from "react-query";
-import { Table, Input, Space, message, Button, Modal, Tag } from "antd";
+import {
+  Table,
+  Input,
+  Space,
+  message,
+  Button,
+  Modal,
+  Tag,
+  Card,
+  Typography,
+  Statistic,
+  Popconfirm,
+  Alert,
+} from "antd";
 
 // Local deps
 import styles from "./index.module.css";
 import PopupContextMenu from "components/PopupContextMenu";
+import { HomeOutlined, SendOutlined } from "@ant-design/icons";
 
 const CollectionsPage = () => {
   const router = useRouter();
@@ -23,6 +37,8 @@ const CollectionsPage = () => {
     useState(false);
   const [isEditCollectionModalOpen, setIsEditCollectionModalOpen] =
     useState(false);
+  const [tempSearchTags, setTempSearchTags] = useState("");
+  const [isReport, setIsReport] = useState(false);
 
   const [search, setSearch] = useState({
     searchName: "",
@@ -55,15 +71,32 @@ const CollectionsPage = () => {
     }
   }, [status]);
 
+  useEffect(() => {
+    if (router.isReady) {
+      const tags = (router.query?.tags as string) || undefined;
+
+      if (tags) {
+        setTempSearchTags(tags);
+      } else {
+        collectionsQuery.refetch();
+      }
+
+      const display = (router.query?.display as string) || undefined;
+      if (display === "report") {
+        setIsReport(true);
+      }
+    }
+  }, [router]);
+
   // Get the all collection
   const collectionsQuery = useQuery(
-    "collections",
-    async () => {
+    ["collections", tempSearchTags],
+    async (e) => {
       return await axios.get("/api/v2/collection", {
         params: {
           mtcm: search.searchCode,
           name: search.searchName,
-          tags: search.searchTags,
+          tags: search.searchTags === "" ? tempSearchTags : search.searchTags,
         },
       });
     },
@@ -77,6 +110,7 @@ const CollectionsPage = () => {
         }
       },
       retry: false,
+      enabled: tempSearchTags !== "",
     }
   );
 
@@ -148,6 +182,27 @@ const CollectionsPage = () => {
     }
   );
 
+  /**
+   * Send report mutation
+   */
+  const sendReport = useMutation(
+    "report",
+    async () => {
+      return await axios.post("/api/v2/report", {
+        tags: tempSearchTags,
+      });
+    },
+    {
+      onError(err: any) {
+        messageApi.open({
+          type: "error",
+          content: err?.response?.data?.error || err.message,
+        });
+      },
+      retry: false,
+    }
+  );
+
   const CollectionTableColumns = [
     {
       title: "Last Check",
@@ -166,6 +221,9 @@ const CollectionsPage = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (item: any) => (
+        <span style={{ textTransform: "capitalize" }}>{item}</span>
+      ),
     },
     {
       title: "Tags",
@@ -179,7 +237,6 @@ const CollectionsPage = () => {
           : _item?.map((v: any, id: any) => (
               <Tag
                 style={{
-                  textTransform: "none",
                   marginInlineEnd: "2px",
                   marginBottom: "2px",
                 }}
@@ -203,46 +260,153 @@ const CollectionsPage = () => {
     <>
       {contextHolder}
       <Head>
-        <title>Dashboard - Viverra</title>
+        {isReport ? (
+          <title>Report - Viverra</title>
+        ) : (
+          <title>Dashboard - Viverra</title>
+        )}
       </Head>
       <main className={styles.main}>
-        <div className={styles.action__container}>
-          <Space.Compact className={styles.search__container}>
-            <Input
-              allowClear
-              className={styles.input__mtcm}
-              placeholder="Search MTCM"
-              onChange={(e) =>
-                setSearch({ ...search, searchCode: e.target.value })
-              }
-              onPressEnter={() => collectionsQuery.refetch()}
-            />
-            <Input
-              allowClear
-              className={styles.input__mtcm__long}
-              placeholder="Search collection name"
-              onChange={(e) =>
-                setSearch({ ...search, searchName: e.target.value })
-              }
-              onPressEnter={() => collectionsQuery.refetch()}
-            />
-            <Input.Search
-              allowClear
-              enterButton
-              placeholder="Search tags"
-              onChange={(e) =>
-                setSearch({ ...search, searchTags: e.target.value })
-              }
-              onSearch={() => collectionsQuery.refetch()}
-            />
-          </Space.Compact>
-          <Button
-            type="primary"
-            onClick={() => setIsNewCollectionModalOpen(true)}
-          >
-            + Create New Collection
-          </Button>
-        </div>
+        {!isReport && (
+          <div className={styles.action__container}>
+            <Space.Compact className={styles.search__container}>
+              <Input
+                allowClear
+                className={styles.input__mtcm}
+                placeholder="Search MTCM"
+                onChange={(e) =>
+                  setSearch({ ...search, searchCode: e.target.value })
+                }
+                value={search.searchCode}
+                onPressEnter={() => collectionsQuery.refetch()}
+              />
+              <Input
+                allowClear
+                className={styles.input__mtcm__long}
+                placeholder="Search collection name"
+                onChange={(e) =>
+                  setSearch({ ...search, searchName: e.target.value })
+                }
+                value={search.searchName}
+                onPressEnter={() => collectionsQuery.refetch()}
+              />
+              <Input.Search
+                allowClear
+                enterButton
+                placeholder="Search tags"
+                onChange={(e) =>
+                  setSearch({ ...search, searchTags: e.target.value })
+                }
+                value={search.searchTags}
+                onSearch={() => collectionsQuery.refetch()}
+              />
+            </Space.Compact>
+            <Button
+              type="primary"
+              onClick={() => setIsNewCollectionModalOpen(true)}
+            >
+              + Create New Collection
+            </Button>
+          </div>
+        )}
+        {isReport && (
+          <>
+            <Card size="small" style={{ marginBottom: "16px" }}>
+              <div className={styles.title__container}>
+                <div className={styles.desc__container}>
+                  <Typography.Text
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    📝 Viverra Visual Test Report
+                  </Typography.Text>
+                  <Typography.Text>
+                    Team Name:{" "}
+                    <b>{collectionsQuery?.data?.data?.highlight?.teamName}</b>
+                  </Typography.Text>
+                  <Typography.Text>
+                    Report Tags:{" "}
+                    {collectionsQuery?.data?.data?.highlight?.tags?.map(
+                      (v: string, i: number) => (
+                        <Tag key={i} style={{ fontWeight: "bold" }}>
+                          {v}
+                        </Tag>
+                      )
+                    )}
+                  </Typography.Text>
+                  <Typography.Text>
+                    Latest Check at:{" "}
+                    <b>
+                      {collectionsQuery?.data?.data?.highlight?.lastCheckAt}
+                    </b>
+                  </Typography.Text>
+                </div>
+                <div className={styles.stats}>
+                  <Statistic
+                    title="Passed"
+                    value={collectionsQuery.data?.data?.highlight?.passed}
+                    suffix={
+                      <Typography.Text style={{ color: "green" }}>
+                        SS
+                      </Typography.Text>
+                    }
+                    valueStyle={{ color: "green" }}
+                  />
+                  <Statistic
+                    title="Unmatch"
+                    value={collectionsQuery.data?.data?.highlight?.failed}
+                    suffix={<Typography.Text>SS</Typography.Text>}
+                  />
+                  <Statistic
+                    title="Error"
+                    value={collectionsQuery.data?.data?.highlight?.error}
+                    suffix={<Typography.Text>SS</Typography.Text>}
+                  />
+                  <Statistic
+                    title="Approved"
+                    value={collectionsQuery.data?.data?.highlight?.tc?.approved}
+                    suffix={
+                      <Typography.Text style={{ color: "green" }}>
+                        Coll
+                      </Typography.Text>
+                    }
+                    valueStyle={{ color: "green" }}
+                  />
+                  <Statistic
+                    title="Unreviewed"
+                    value={
+                      collectionsQuery.data?.data?.highlight?.tc?.unreviewed
+                    }
+                    suffix={<Typography.Text>Coll</Typography.Text>}
+                  />
+                </div>
+              </div>
+            </Card>
+            <div className={styles.button__action__container}>
+              <Button
+                type="primary"
+                icon={<HomeOutlined rev={undefined} />}
+                href="/v2"
+              >
+                Dashboard
+              </Button>
+              <Popconfirm
+                title="Send Report"
+                description="Are you sure to send this report to your webhook?"
+                onConfirm={() => sendReport.mutate()}
+                okText="Yes"
+                cancelText="No"
+                placement="left"
+              >
+                <Button icon={<SendOutlined rev={undefined} />}>
+                  Send Report
+                </Button>
+              </Popconfirm>
+            </div>
+          </>
+        )}
         <Table
           dataSource={collectionsQuery?.data?.data?.data}
           rowKey="id"
@@ -274,6 +438,11 @@ const CollectionsPage = () => {
               },
             };
           }}
+        />
+        <Alert
+          message="You can edit the collection by right clicking on the collection that you want to edit and click 'Edit Collection'!"
+          type="info"
+          showIcon
         />
         <PopupContextMenu
           {...popupValue}
@@ -324,6 +493,11 @@ const CollectionsPage = () => {
                 })
               }
             />
+            <Alert
+              message="Separated the tag by comma if you want to add multiple tags (example: desktop,homepage,testing)"
+              type="info"
+              showIcon
+            />
           </div>
         </Modal>
         <Modal
@@ -359,6 +533,11 @@ const CollectionsPage = () => {
                   tags: e.target.value.replace(/\s/g, ""),
                 })
               }
+            />
+            <Alert
+              message="Separated the tag by comma if you want to add multiple tags (example: desktop,homepage,testing)"
+              type="info"
+              showIcon
             />
           </div>
         </Modal>

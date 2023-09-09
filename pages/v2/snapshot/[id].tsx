@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import styles from "./[id].module.css";
 import {
+  Alert,
   Button,
   Card,
   Input,
@@ -167,13 +168,20 @@ const SnapshotDetailPage = () => {
           </div>
         </Card>
         <div className={styles.header__container}>
-          <Button
-            icon={<EyeInvisibleOutlined rev={undefined} />}
-            disabled={!snapshotDetailQuery.data?.data?.isEligible}
-            onClick={() => setIsModalMaskingOpen(true)}
-          >
-            Masking
-          </Button>
+          <div>
+            <Button
+              icon={<EyeInvisibleOutlined rev={undefined} />}
+              disabled={!snapshotDetailQuery.data?.data?.isEligible}
+              onClick={() => setIsModalMaskingOpen(true)}
+            >
+              Masking
+            </Button>
+            <Alert
+              message="Don't resize the page while masking to prevent a misplaced masking area!"
+              type="info"
+              showIcon
+            />
+          </div>
           <div>
             <Button
               type="primary"

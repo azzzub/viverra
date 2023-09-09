@@ -167,10 +167,16 @@ export const getAllCollections = async (
     },
   });
 
-  let lastCheckAt: Date;
+  let _lastCheckAt: any;
+  let _failed = 0;
+  let _passed = 0;
+  let _error = 0;
+  let _tcApproved = 0;
+  let _tcUnreviewed = 0;
 
   // Add result object to the collection data
   allData.forEach((collection) => {
+    let lastCheckAt: any;
     let failed = 0;
     let passed = 0;
     let error = 0;
@@ -188,15 +194,24 @@ export const getAllCollections = async (
         error++;
       }
 
-      const time = page.lastCheckAt || page.createdAt;
-      if (i === 0) {
+      const time = page.lastCheckAt;
+      if (time && i === 0) {
         lastCheckAt = time;
+        _lastCheckAt = time;
       }
 
-      if (lastCheckAt.getTime() > time.getTime()) {
+      if (time && lastCheckAt.getTime() < time.getTime()) {
         lastCheckAt = time;
       }
     });
+
+    _error += error;
+    _passed += passed;
+    _failed += failed;
+
+    if (lastCheckAt?.getTime() > _lastCheckAt?.getTime()) {
+      _lastCheckAt = lastCheckAt;
+    }
 
     // @ts-ignore
     collection["result"] = {
@@ -232,10 +247,34 @@ export const getAllCollections = async (
               failed + error + "/" + collection.Page.length + " Unreviewed",
             color: "orange",
           };
+
+    if (collection.Page.length === 0) {
+    } else if (failed + error === 0) {
+      _tcApproved++;
+    } else {
+      _tcUnreviewed++;
+    }
   });
 
   return {
     data: allData,
+    highlight: {
+      passed: _passed,
+      failed: _failed,
+      error: _error,
+      teamName: allData[0]?.Team?.name || "-",
+      lastCheckAt:
+        (_lastCheckAt &&
+          formatDistance(_lastCheckAt, new Date(), {
+            addSuffix: true,
+          })) ||
+        "-",
+      tags: tags ? tags?.split(",") : ["-"],
+      tc: {
+        approved: _tcApproved,
+        unreviewed: _tcUnreviewed,
+      },
+    },
     error: null,
   };
 };

@@ -12,7 +12,6 @@
 
 .row {
   cursor: pointer;
-  text-transform: capitalize;
 }
 
 .action__container {
@@ -26,4 +25,34 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 24px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-right: 8px;
+}
+
+.title__container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.desc__container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.button__action__container {
+  line-height: 0;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
