@@ -4,8 +4,8 @@ import { getToken } from "next-auth/jwt";
 // Local
 import { LoggerAPI } from "utils/logger";
 import { handler } from "utils/nextConnect";
-import { getAllCollections } from "./collection.handler";
-import { sendSlack } from "./report.handler";
+import { getAllCollections } from "../collection.handler";
+import { sendSlack } from "./index.handler";
 
 handler.post("/api/v2/report", async (req, res) => {
   const logger = new LoggerAPI(req, res);

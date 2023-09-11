@@ -79,4 +79,5 @@ model Team {
   updatedAt    DateTime     @updatedAt
   Collection   Collection[]
   User         User[]
+  token        String?
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import React from "react";
 
 import { UserOutlined } from "@ant-design/icons";
@@ -6,7 +7,6 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import styles from "./Header.module.css";
 import Image from "next/image";
-import Link from "next/link";
 
 const Header = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <div className={styles.header__container}>
       <div>
-        <Link href="/v2" className={styles.left__container}>
+        <a href="/v2" className={styles.left__container}>
           <Image
             alt="Viverra Mascot"
             src="/viverra-mascot.png"
@@ -37,7 +37,7 @@ const Header = () => {
           <Typography.Text className={styles.title}>
             Viverra - Visual Test
           </Typography.Text>
-        </Link>
+        </a>
         <Menu
           theme="dark"
           mode="horizontal"

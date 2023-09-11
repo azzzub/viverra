@@ -13,13 +13,14 @@ import { signIn, useSession } from "next-auth/react";
 
 // Local
 import { useMutation, useQuery } from "react-query";
-import { Alert, Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input, Popconfirm, Space } from "antd";
 import styles from "./team.module.css";
 import {
   EditOutlined,
   FileDoneOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
+import copy from "copy-to-clipboard";
 
 const getMyTeam = async () => await axios.get("/api/team");
 
@@ -37,6 +38,7 @@ const MyTeamPage = () => {
     webhook: "",
     metadata: "",
     id: "",
+    token: "",
   });
 
   // Get the teams
@@ -61,6 +63,26 @@ const MyTeamPage = () => {
     },
   });
 
+  const generateTokenMutation = useMutation(
+    "token",
+    async () => await axios.post("/api/v2/team/token"),
+    {
+      onSuccess(v) {
+        toast.success(
+          `New token generated!\nCopied to your clipboard!\n\nYour token: ${v.data?.data?.token}`,
+          {
+            duration: 30000,
+          }
+        );
+        setValue({ ...value, token: v.data?.data?.token });
+        copy(v.data?.data?.token);
+      },
+      onError(error: any) {
+        toast.error(error?.response?.data?.error || error.message);
+      },
+    }
+  );
+
   // Unauthenticated user redirect to sign in
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -71,16 +93,20 @@ const MyTeamPage = () => {
   useEffect(() => {
     if (myTeamQuery.data?.data?.data?.Team) {
       const data = myTeamQuery.data?.data?.data?.Team;
-      setValue({
-        id: data.id,
-        slackMention: data.slackMention,
-        name: data.name,
-        note: data.note,
-        metadata: data.metadata,
-        webhook: data.webhook,
-      });
+      if (!isEdit) {
+        setValue({
+          id: data.id,
+          slackMention: data.slackMention,
+          name: data.name,
+          note: data.note,
+          metadata: data.metadata,
+          webhook: data.webhook,
+          token: data.token,
+        });
+      }
       setWebhookTemp(data.webhook);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myTeamQuery.data]);
 
   if (status === "loading") {
@@ -142,6 +168,35 @@ const MyTeamPage = () => {
               showIcon
             />
             <br />
+            <Form.Item label="Team Token">
+              <Space.Compact style={{ width: "100%" }}>
+                <Input disabled value={value.token} />
+                <Popconfirm
+                  placement="left"
+                  title="Generate New Token"
+                  description="Are you sure to generate new token? The existing token will be replaced!"
+                  onConfirm={() => {
+                    generateTokenMutation.mutate();
+                  }}
+                  okText="Acknowledge"
+                  cancelText="Cancel"
+                >
+                  <Button
+                    type="primary"
+                    danger
+                    loading={generateTokenMutation.isLoading}
+                  >
+                    Generate New Token
+                  </Button>
+                </Popconfirm>
+              </Space.Compact>
+            </Form.Item>
+            <Alert
+              message="Your new generated token would only appears once after you generated and automatically copied to your clipboard, save it nicely before it's gone! Or... contact admin!"
+              type="warning"
+              showIcon
+            />
+            <br />
             <Form.Item>
               <div className={styles.footer__container}>
                 <Button
@@ -162,16 +217,18 @@ const MyTeamPage = () => {
                   }}
                   disabled={myTeamMutation.isLoading || myTeamQuery.isLoading}
                 >
-                  {isEdit ? "Finish" : "Edit"}
+                  {isEdit ? "Cancel" : "Edit"}
                 </Button>
-                <Button
-                  type="primary"
-                  icon={<SaveOutlined rev={undefined} />}
-                  loading={myTeamMutation.isLoading || myTeamQuery.isLoading}
-                  onClick={() => myTeamMutation.mutate(value)}
-                >
-                  Save
-                </Button>
+                {isEdit && (
+                  <Button
+                    type="primary"
+                    icon={<SaveOutlined rev={undefined} />}
+                    loading={myTeamMutation.isLoading || myTeamQuery.isLoading}
+                    onClick={() => myTeamMutation.mutate(value)}
+                  >
+                    Save
+                  </Button>
+                )}
               </div>
             </Form.Item>
           </Form>

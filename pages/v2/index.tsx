@@ -27,7 +27,7 @@ import {
 // Local deps
 import styles from "./index.module.css";
 import PopupContextMenu from "components/PopupContextMenu";
-import { HomeOutlined, SendOutlined } from "@ant-design/icons";
+import { BookOutlined, HomeOutlined, SendOutlined } from "@ant-design/icons";
 
 const CollectionsPage = () => {
   const router = useRouter();
@@ -301,12 +301,21 @@ const CollectionsPage = () => {
                 onSearch={() => collectionsQuery.refetch()}
               />
             </Space.Compact>
-            <Button
-              type="primary"
-              onClick={() => setIsNewCollectionModalOpen(true)}
-            >
-              + Create New Collection
-            </Button>
+            <div className={styles.button__dashboard__container}>
+              <Button
+                type="link"
+                href={`/v2?display=report&tags=${search.searchTags}`}
+                icon={<BookOutlined rev={undefined} />}
+              >
+                See as a report
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => setIsNewCollectionModalOpen(true)}
+              >
+                + Create New Collection
+              </Button>
+            </div>
           </div>
         )}
         {isReport && (
