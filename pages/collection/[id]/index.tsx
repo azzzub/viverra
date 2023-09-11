@@ -83,6 +83,10 @@ export default function Home() {
     <>
       <Head>
         <title>collection - viverra</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+        ></link>
       </Head>
       <main className="container">
         <NavHeader
