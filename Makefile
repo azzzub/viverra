@@ -1,23 +1,5 @@
-setup:
-	yarn
-	touch logs/logs.log
-	touch db/data.db
-	cp .env-example .env
-	npx prisma migrate reset --force
-	npx prisma db push
-	node ./utils/localAdmin.js
+up:
+	docker compose up -d
 
-serve-yarn:
-	yarn
-	yarn build
-	yarn start
-
-serve-pm2:
-	yarn
-	yarn build
-	pm2 start "yarn start" --name viverra
-
-restart-pm2:
-	pm2 stop viverra
-	pm2 delete viverra
-	make serve-pm2
+down:
+	docker compose down
