@@ -1,0 +1,14 @@
+node_modules
+.next
+.vscode
+.gitignore
+README.md
+.dockerignore
+.git
+tsconfig.tsbuildinfo
+
+db/data.db
+logs/logs.log
+.env
+public/snapshots/*.png
+public/snapshots/diff/*.png
