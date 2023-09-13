@@ -348,7 +348,7 @@ const SnapshotDetailPage = () => {
         style={{
           top: 30,
         }}
-        width="85%"
+        width="auto"
         onCancel={() => setIsModalMaskingOpen(false)}
         footer={[
           <Button

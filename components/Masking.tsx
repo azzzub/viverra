@@ -63,6 +63,8 @@ export default function Masking({ res, cbNewRect, cb, disable }: any) {
     <div
       style={{
         position: "relative",
+        width: "auto",
+        height: "auto",
       }}
     >
       <img
@@ -82,16 +84,20 @@ export default function Masking({ res, cbNewRect, cb, disable }: any) {
             +(e.target.naturalHeight / e.target.offsetHeight).toFixed(2)
           );
         }}
-        width="100%"
+        width="auto"
         height="100%"
+        style={{
+          maxHeight: "600px",
+        }}
       />
       <div
         style={{
           position: "absolute",
           top: 0,
           left: 0,
-          width: "100%",
+          width: "auto",
           height: "100%",
+          maxHeight: "600px",
         }}
       >
         {/* <button onClick={onAddCircle}>Add circle</button> */}
