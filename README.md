@@ -4,72 +4,18 @@
 
 ---
 
-<img src="./public/viverra-mascot.png" alt="viverra" style="width:150px;"/>
-
-_will always watching your snapshot_
+<img src="./public/viverra-mascot.png" alt="viverra" style="width:50px;"/>
 
 ---
 
-**pre req: install `yarn`**
+**> using**
 
-or you can use npm if you can't install yarn _(no guarantee)_
+make sure you are able to run docker and docker compose
 
-</br>
+after you have docker and docker compose, just run `make up`
 
-you can serve Viverra with `pm2` or `yarn`, with `pm2` you can run viverra on the background:
+the viverra will up on `http://localhost:4848`
 
-<br/>
+default user, `user: admin` and `pass: admin`
 
-**> installation - serve with pm2 (choose one)**
-
-**pre req: install `pm2`** _[instalation guidance](https://pm2.keymetrics.io/docs/usage/quick-start/)_
-
-run `make setup` and follow the instruction
-
-then, run `make serve-pm2`
-
-viverra will serve on port :4848
-
-_restarting the viverra service in `pm2`, run this command `make restart-pm2`_
-
-<br/>
-
-**> installation - serve with yarn (choose one)**
-
-run `make setup` and follow the instruction
-
-then, run `make serve-yarn`
-
-viverra will serve on port :4848
-
-<br/>
-
-**> development**
-
-going to development environment, run `yarn dev`
-
-<br/>
-
-**> showing the database by ui**
-
-you can show the database by UI by running `npx prisma studio`
-
-then the UI will serve on port :5555
-
-_ref: https://github.com/prisma/studio_
-
-<br/>
-
-**> known issue and how to solve it**
-
-if you encounter some issue such as `connect ECONNREFUSED ::1:4848` in the homepage, **please replace your URL and `NEXT_PUBLIC_BASE_URL` variable on `.env` file** from `http://localhost:4848` to `http://127.0.0.1:4848`
-
-<br/>
-
----
-
-## Using on Katalon
-
----
-
-To use viverra on Katalon, see [here](./external/Katalon/README.md)
+to disable the viverra, just run `make down`
