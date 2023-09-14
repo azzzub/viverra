@@ -1,7 +1,8 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable @next/next/no-img-element */
 
 // React deps
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Next deps
 import Head from "next/head";
@@ -91,6 +92,10 @@ export default function MyTeam() {
     <>
       <Head>
         <title>my team - viverra</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+        ></link>
       </Head>
       <main className="container">
         <NavHeader

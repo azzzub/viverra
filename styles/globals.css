@@ -72,3 +72,7 @@
   z-index: 999;
   margin-bottom: -32px;
 }
+
+body {
+  margin: 0;
+}

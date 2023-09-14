@@ -1,5 +1,6 @@
+/* eslint-disable require-jsdoc */
 // React deps
-import { useState } from "react";
+import React, { useState } from "react";
 
 // External
 import axios from "axios";

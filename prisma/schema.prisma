@@ -19,6 +19,7 @@ model Collection {
   Page      Page[]
   Team      Team?    @relation(fields: [teamID], references: [id])
   teamID    String?
+  tags      String?
 }
 
 model Page {
@@ -78,4 +79,5 @@ model Team {
   updatedAt    DateTime     @updatedAt
   Collection   Collection[]
   User         User[]
+  token        String?
 }

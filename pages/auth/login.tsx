@@ -1,10 +1,15 @@
-import NavHeader from "components/NavHeader";
+/* eslint-disable require-jsdoc */
+import React from "react";
+
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input } from "antd";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEventHandler, useState } from "react";
 import { toast } from "react-hot-toast";
+import styles from "./login.module.css";
 
 export default function SignIn() {
   const router = useRouter();
@@ -13,9 +18,7 @@ export default function SignIn() {
     password: "",
   });
 
-  const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-
+  const submitHandler: FormEventHandler<HTMLFormElement> = async () => {
     try {
       const res = await signIn("credentials", {
         username: userSession.username,
@@ -41,37 +44,77 @@ export default function SignIn() {
   return (
     <>
       <Head>
-        <title>login - viverra</title>
+        <title>Login - Viverra</title>
       </Head>
-      <main className="container">
-        <NavHeader hideSession={true} />
-        <h3>login</h3>
-        <form onSubmit={submitHandler}>
-          <label>
-            username
-            <input
+      <main className={styles.container}>
+        <Card title="Login" bordered={false} className={styles.card}>
+          <Form
+            name="normal_login"
+            className="login-form"
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={submitHandler}
+          >
+            <Form.Item
               name="username"
-              type="text"
-              required
-              onChange={(e) =>
-                setUserSession({ ...userSession, username: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            password
-            <input
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your Username!",
+                },
+              ]}
+            >
+              <Input
+                prefix={
+                  <UserOutlined
+                    rev={undefined}
+                    className="site-form-item-icon"
+                  />
+                }
+                placeholder="Username"
+                value={userSession.username}
+                onChange={(e) =>
+                  setUserSession({ ...userSession, username: e.target.value })
+                }
+              />
+            </Form.Item>
+            <Form.Item
               name="password"
-              type="password"
-              required
-              onChange={(e) =>
-                setUserSession({ ...userSession, password: e.target.value })
-              }
-            />
-          </label>
-          <button type="submit">sign in</button>
-        </form>
-        <Link href={"/auth/new-user"}>create an account</Link>
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your Password!",
+                },
+              ]}
+            >
+              <Input
+                prefix={
+                  <LockOutlined
+                    className="site-form-item-icon"
+                    rev={undefined}
+                  />
+                }
+                type="password"
+                placeholder="Password"
+                value={userSession.password}
+                onChange={(e) =>
+                  setUserSession({ ...userSession, password: e.target.value })
+                }
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="login-form-button"
+              >
+                Log in
+              </Button>{" "}
+              Or <Link href="/auth/new-user">register now!</Link>
+            </Form.Item>
+          </Form>
+        </Card>
       </main>
     </>
   );

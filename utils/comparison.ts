@@ -1,5 +1,11 @@
 import { PNG } from "pngjs";
 
+/**
+ * Apply ignore area to image
+ * @param {png} image image
+ * @param {any} ignoreAreas area that want to ignore
+ * @return {any}
+ */
 export function applyIgnoreAreas(image: PNG, ignoreAreas: any): PNG {
   // console.log(ignoreAreas);
   ignoreAreas.forEach((area: any) => {

@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -10,7 +11,7 @@ import NavHeader from "components/NavHeader";
 // import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 
@@ -82,6 +83,10 @@ export default function Home() {
     <>
       <Head>
         <title>collection - viverra</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+        ></link>
       </Head>
       <main className="container">
         <NavHeader

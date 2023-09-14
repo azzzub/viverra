@@ -1,11 +1,14 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input } from "antd";
 import axios from "axios";
-import NavHeader from "components/NavHeader";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-// import { GetServerSidePropsContext } from "next";
+import styles from "./login.module.css";
 
 export default function NewUser() {
   const [username, setUsername] = useState("");
@@ -16,7 +19,7 @@ export default function NewUser() {
   async function signUp() {
     setIsLoading(true);
     try {
-      const res = await axios.post("/api/auth/register", {
+      await axios.post("/api/auth/register", {
         username,
         password,
       });
@@ -32,40 +35,62 @@ export default function NewUser() {
   return (
     <>
       <Head>
-        <title>register - vivirra</title>
+        <title>Register - Vivirra</title>
       </Head>
-      <main className="container">
-        <NavHeader hideSession={true} />
-        <h3>register</h3>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            signUp();
-          }}
+      <main className={styles.container}>
+        <Card
+          title="Register New Account"
+          bordered={false}
+          className={styles.card}
         >
-          <label>
-            username
-            <input
+          <Form
+            name="normal_register"
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={signUp}
+          >
+            <Form.Item
               name="username"
-              type="text"
-              required
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </label>
-          <label>
-            password
-            <input
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your Username!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined rev={undefined} />}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
               name="password"
-              type="password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-          <button type="submit" aria-busy={isLoading}>
-            sign up
-          </button>
-        </form>
-        <Link href={"/auth/login"}>already have an account?</Link>
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your Password!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<LockOutlined rev={undefined} />}
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
+                Register
+              </Button>{" "}
+              Or <Link href="/auth/login">login now!</Link>
+            </Form.Item>
+          </Form>
+        </Card>
       </main>
     </>
   );

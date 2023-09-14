@@ -10,7 +10,7 @@ const Rectangle = ({
   onChange,
   onDblClick,
   disable,
-}) => {
+}: any) => {
   const shapeRef = React.useRef();
   const trRef = React.useRef();
 

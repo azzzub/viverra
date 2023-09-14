@@ -19,7 +19,7 @@ handler.get("/api/team", async (req, res) => {
     });
   }
 
-  let myTeam = await prisma.user.findFirst({
+  const myTeam = await prisma.user.findFirst({
     where: {
       id: token.user?.id,
     },
@@ -32,8 +32,8 @@ handler.get("/api/team", async (req, res) => {
     try {
       const value = myTeam.Team.webhook;
       const _temp = value.split("/");
-      _temp[5] = "xxxxxxxxxx";
-      _temp[6] = "xxxxxxxxxxxxxx";
+      _temp[5] = "**********";
+      _temp[6] = "***************";
       myTeam.Team.webhook = _temp.join("/");
     } catch (error: any) {
       logger.error(error.message);
@@ -41,6 +41,14 @@ handler.get("/api/team", async (req, res) => {
         data: null,
         error: error.message,
       });
+    }
+  }
+
+  if (myTeam?.Team) {
+    if (myTeam.Team.token === null || myTeam.Team.token === "") {
+      myTeam.Team.token = "No token generated yet!";
+    } else {
+      myTeam.Team.token = "***********************";
     }
   }
 

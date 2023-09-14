@@ -1,7 +1,8 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 // React deps
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Next deps
 import Head from "next/head";
@@ -66,6 +67,10 @@ export default function AdminHome() {
     <>
       <Head>
         <title>admin viverra - visual verifier</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+        ></link>
       </Head>
       <main className="container">
         <NavHeader

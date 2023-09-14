@@ -1,3 +1,6 @@
+/* eslint-disable require-jsdoc */
+import React from "react";
+
 import axios from "axios";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";

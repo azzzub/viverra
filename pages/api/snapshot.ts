@@ -64,6 +64,22 @@ handler.post("/api/snapshot", async (req, res) => {
       });
     }
 
+    // Check if the collection is valid
+    // If the collection isn't valid, then throw the error message to user
+    const collection = await prisma.collection.findFirst({
+      where: {
+        id: collectionID,
+      },
+    });
+
+    if (!collection) {
+      return res.status(400).json({
+        data: null,
+        error:
+          "can't find the collection ID or MTCM on viverra, please recheck again!",
+      });
+    }
+
     const page = await prisma.page.findFirst({
       where: {
         name,
@@ -197,7 +213,7 @@ handler.post("/api/snapshot", async (req, res) => {
 
   try {
     comparison = pixelmatch(img1.data, img2.data, diff.data, width, height, {
-      threshold: threshold ? +threshold : 0.1
+      threshold: threshold ? +threshold : 0.1,
     });
 
     diffPercentage = +((comparison * 100) / (width * height)).toFixed(2);
