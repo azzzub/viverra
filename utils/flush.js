@@ -11,6 +11,9 @@ const fs = require("fs");
 
 const prisma = new PrismaClient();
 
+/**
+ * Flush approve expired, pending expired, rejected file
+ */
 async function main() {
   const snapshot = await prisma.snapshot.findMany({
     where: {
